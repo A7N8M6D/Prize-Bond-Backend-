@@ -1,1 +1,1 @@
-export const DB_NAME="PrizeBond";
+export const DB_NAME="prizebond";
