@@ -3,7 +3,7 @@ import multer from "multer";
 const storage =multer.diskStorage(
     {
         distanation:function(req , res, cb){
-        cb(null ,"/temp/my-uploads")
+        cb(null ,"/temp/temp")
         },
         filename:function(req ,file ,cb)
         {
