@@ -1,18 +1,15 @@
 {
-    "version": 2,
-    "name": "my-node-api",
-    "routes": [
+    "version":2,
+    "builds":[
       {
-        "src": "/api/*",
-        "dest": "api/index.js"
+        "src":"./index.js",
+        "use":"@vercel/node"
       }
     ],
-    "env": {
-      "NODE_ENV": "production"
-    },
-    "build": {
-      "env": {
-        "API_KEY": "@api-key"
+    "routes":[
+      {
+        "src":"/(.*)",
+        "dest":"/"
       }
-    }
+    ]
   }
