@@ -23,11 +23,6 @@ const userSchema = new Schema({
         trim: true,
         index: true
     },
-    profileImg: {
-        type: String,
-        required: true
-        // You mentioned Cloudinary here, so it seems you're planning to store the image URL from Cloudinary
-    },
     userType: {
         type: String,
         enum: ['admin', 'broker', 'user'],
@@ -40,33 +35,12 @@ const userSchema = new Schema({
         // Assuming passwords are stored as strings (hashed and salted for security)
     },
     Location:{
-              type:String
+              type:String,
+              required:true
     },
     refreshToken: {
         type: String
         // This field might be used for storing refresh tokens for authentication
-    },
-    UserInfo: {
-        // Admin-related information
-        adminInfo: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'AdminBond'
-        }],
-        // Broker-related information
-        brokerInfo: [{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"brokerInfo"
-        }],
-        // User-related bonds
-        UserBonds: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'UserBond'
-        }],
-        BrokerRequest: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'BrokerRequest'
-        }]
-
     }
 }, {
     timestamps: true
