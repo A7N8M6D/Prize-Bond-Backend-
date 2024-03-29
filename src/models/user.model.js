@@ -34,6 +34,10 @@ const userSchema = new Schema({
         required: true
         // Assuming passwords are stored as strings (hashed and salted for security)
     },
+    number:{
+        type:Number,
+        required:true
+    },
     Location:{
               type:String,
               required:true

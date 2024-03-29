@@ -38,18 +38,23 @@ const registerUser = asynchandler(async (req, res) => {
   //res recieve or not and user signed or not
 
   //res return
-  const { fullname, email, username, password, userType, Location } = req.body;
+  const { fullname, email, username, password, userType, Location ,number } = req.body;
   console.log("email", email);
   console.log("name ", fullname);
   console.log("Location", Location);
   console.log("Username ", username);
   console.log("usertype", userType);
   console.log("password", password);
+  console.log("Number", number);
+  
   if (
     [fullname, email, username, password, userType, Location].some((field) => {
       field?.trim() === "";
     })
   ) {
+    throw new ApiError(400, "All Fields are Required");
+  }
+  if (Number=="") {
     throw new ApiError(400, "All Fields are Required");
   }
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
@@ -63,6 +68,7 @@ const registerUser = asynchandler(async (req, res) => {
     userType,
     password,
     Location,
+    number
   });
   const createdUser = await User
     .findById(user._id)
