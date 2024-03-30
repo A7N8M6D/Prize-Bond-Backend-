@@ -58,25 +58,46 @@ userSchema.methods.isPasswordCorrect=async function(password)
 {
     return await bcrypt.compare(password , this.password)
 }
-userSchema.methods.generatorAccesssToken =function(){
-   return jwt.sign({
-        _id:this._id,
-        email:this.email,
-        username:this.username,
-        fullname:this.fullname
-    },
-    process.nextTick.ACCESS_TOKEN_SECRET),{
-        expirein:process.env.ACCESS_TOKEN_EXPIRY
+userSchema.methods.generatorAccesssToken = function () {
+    try {
+        console.log("Generating access token...");
+
+        // Generate access token using jwt.sign()
+        const accessToken = jwt.sign({
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            fullname: this.fullname
+        }, process.env.ACCESS_TOKEN_SECRET, {
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+        });
+
+        console.log("Access token generated successfully");
+        return accessToken;
+    } catch (error) {
+        // Handle any errors that occur during token generation
+        console.error("Error generating access token:", error);
+        throw new Error("Failed to generate access token");
     }
-}
-userSchema.methods.generateRefreshToken =function()
-{
-    return jwt.sign({
-        _id:this._id,
-        
-    },
-    process.nextTick.REFRESH_TOKEN_SECRET),{
-        expirein:process.env.REFRESH_TOKEN_EXPIRY
+};
+
+userSchema.methods.generateRefreshToken = function () {
+    try {
+        console.log("Generating refresh token...");
+
+        // Generate refresh token using jwt.sign()
+        const refreshToken = jwt.sign({
+            _id: this._id
+        }, process.env.REFRESH_TOKEN_SECRET, {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+        });
+
+        console.log("Refresh token generated successfully");
+        return refreshToken;
+    } catch (error) {
+        // Handle any errors that occur during token generation
+        console.error("Error generating refresh token:", error);
+        throw new Error("Failed to generate refresh token");
     }
 }
 export const User=mongoose.model("User" ,userSchema)
