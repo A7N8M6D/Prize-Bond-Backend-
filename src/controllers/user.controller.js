@@ -76,6 +76,10 @@ const registerUser = asynchandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User with email or password already exist");
   }
+  if(userType !== "user") {
+    throw new ApiError(400, "userType Error");
+}
+
   const user = await User.create({
     username,
     email,
@@ -236,6 +240,7 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);
   const isPassword = await user.isPasswordCorrect(oldPassword);
+  console.log("Current Password"+isPassword)
   if (!isPassword) {
     throw new ApiError(400, "Invalid old Password");
   }

@@ -11,10 +11,10 @@ const formschema = new Schema(
     },
     Status: {
       type: Boolean,
-      required: true,
+      default:false
     },
     user: {
-      type: Schema.ObjectId.type,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   },

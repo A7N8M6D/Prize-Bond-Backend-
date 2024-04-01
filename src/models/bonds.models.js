@@ -11,10 +11,16 @@ const bondschema = new Schema(
     },
     win: {
       type: Boolean,
-      required: true,
+       default:false
+    },
+    BuyYear:{
+      type:String
+    },
+    Buymonths:{
+      type:String
     },
     user: {
-      type: Schema.ObjectId.type,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   },
