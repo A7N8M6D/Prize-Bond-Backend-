@@ -1,6 +1,6 @@
 const asynchandler =(requestHandler)=>{
      return (req , res ,next)=>{
-        Promise.resolve(requestHandler(req , res , next)).catch((error)=>{return res.status( error.statsCode ).json({success:false,message:error.message})})
+        Promise.resolve(requestHandler(req , res , next)).catch((error)=>{return (res.status( error.statsCode || 500 ).json({success:false,message:error.message}))})
      }
 }
 export {asynchandler}

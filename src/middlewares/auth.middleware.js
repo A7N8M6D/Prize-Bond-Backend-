@@ -12,6 +12,7 @@ export const verifyJWT = asynchandler(async (req, _, next) => {
     console.log("refreshtoken" + JSON.stringify(token));
     if (!token) {
       throw new ApiError(401, "Unathorized Request");
+      
     }
     console.log("2");
     const decodedToken = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -27,6 +28,6 @@ export const verifyJWT = asynchandler(async (req, _, next) => {
     console.log("end");
     next();
   } catch (err) {
-    throw new ApiResponse(401, err?.message || "Invalid Access Token");
+    throw new ApiError(401, err?.message || "Invalid Access Token");
   }
 });

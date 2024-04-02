@@ -26,7 +26,7 @@ const GenerRefreshAccessToken = async (userID) => {
       "Something went wrong while generating referesh and access token"
     );
   }
-}
+};
 /*
  
  
@@ -76,9 +76,11 @@ const registerUser = asynchandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User with email or password already exist");
   }
-  if(userType !== "user") {
-    throw new ApiError(400, "userType Error");
-}
+  if (userType !== "user") {
+    const a= new ApiError(400, "userType Error");
+    console.log(a.message, a.statsCode);
+    throw a;
+  }
 
   const user = await User.create({
     username,
@@ -89,7 +91,7 @@ const registerUser = asynchandler(async (req, res) => {
     Location,
     number,
   });
-  
+
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken -userType"
   );
@@ -99,7 +101,7 @@ const registerUser = asynchandler(async (req, res) => {
       "Something Went Wrong with the Registration of User"
     );
   }
-  console.log("hhzhxfzhjfgzhjzgfxj"+ApiError)
+  console.log("hhzhxfzhjfgzhjzgfxj" + ApiError);
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User Creted Successfully"));
@@ -242,7 +244,7 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await User.findById(req.user?._id);
   const isPassword = await user.isPasswordCorrect(oldPassword);
-  console.log("Current Password"+isPassword)
+  console.log("Current Password" + isPassword);
   if (!isPassword) {
     throw new ApiError(400, "Invalid old Password");
   }

@@ -66,9 +66,9 @@ const addStore = asynchandler(async (req, res) => {
 */
 const GetStore = asynchandler(async (req, res) => {
   const allstore = req.user._id;
-  console.log("sdsd"+allstore)
+  console.log("sdsd" + allstore);
   const stores = await Store.find({ user: allstore });
-  console.log("sdasdasd"+stores)
+  console.log("sdasdasd" + stores);
   return res
     .status(200)
     .json(new ApiResponse(200, stores, "Store Fetched Succesfully"));
@@ -96,11 +96,10 @@ const GetAllStore = asynchandler(async (req, res) => {
   if (location.trim() !== "") {
     // Find the store with the specified location
     console.log("------------------All stores:----------------------", stores);
-    console.log("how man"+howMan)
+    console.log("how man" + howMan);
     selectedStore = stores.filter((store) => store.Location === location);
     if (howMan === 0) {
-      
-      selectedStores = selectedStore.slice(-1,endIndex);
+      selectedStores = selectedStore.slice(-1, endIndex);
     } else {
       selectedStores = selectedStore.slice(howMan, endIndex);
     }
@@ -160,8 +159,7 @@ const UpdateStore = asynchandler(async (req, res) => {
 const DeleteStore = asynchandler(async (req, res) => {
   const { Store_id } = req.body;
   const deletedStore = await Store.findByIdAndDelete(Store_id);
-  
-  
+
   // Check if the bond exists
   if (!deletedStore) {
     throw new ApiError(400, " Store Not Deleted");
