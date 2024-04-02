@@ -89,6 +89,7 @@ const registerUser = asynchandler(async (req, res) => {
     Location,
     number,
   });
+  
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken -userType"
   );
@@ -98,6 +99,7 @@ const registerUser = asynchandler(async (req, res) => {
       "Something Went Wrong with the Registration of User"
     );
   }
+  console.log("hhzhxfzhjfgzhjzgfxj"+ApiError)
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User Creted Successfully"));
