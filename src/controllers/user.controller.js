@@ -26,7 +26,7 @@ const GenerRefreshAccessToken = async (userID) => {
       "Something went wrong while generating referesh and access token"
     );
   }
-};
+}
 /*
  
  
@@ -34,74 +34,62 @@ const GenerRefreshAccessToken = async (userID) => {
 
 
 */
-const registerUser = asynchandler(async (req, res) => {
-  //get data from the user
+const registerUser = async (req, res) => {
+  try {
+    // get data from the user
+    const { fullname, email, username, password, userType, Location, number } = req.body;
 
-  //validation
+    // validate input fields
+    if ([fullname, email, username, password, userType, Location].some(field => !field.trim())) {
+      throw new ApiError(400, "All Fields are Required");
+    }
 
-  //check if the user already exist     email   password
+    if (!number) {
+      throw new ApiError(400, "Number is Required");
+    }
 
-  //check for images
+    // check if user already exists
+    const existedUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existedUser) {
+      throw new ApiError(409, "User with email or username already exists");
+    }
 
-  // upload to clodinary
+    // validate userType
+    if (userType !== "user") {
+      throw new ApiError(400, "Invalid userType");
+    }
 
-  //user object  using create entry in db
+    // create user
+    const user = await User.create({
+      username,
+      email,
+      fullname,
+      userType,
+      password,
+      Location,
+      number,
+    });
 
-  //remove password and refresh token
+    // remove sensitive data
+    const createdUser = user.toObject();
+    delete createdUser.password;
+    delete createdUser.refreshToken;
+    delete createdUser.userType;
 
-  //res recieve or not and user signed or not
-
-  //res return
-  const { fullname, email, username, password, userType, Location, number } =
-    req.body;
-  console.log("email", email);
-  console.log("name ", fullname);
-  console.log("Location", Location);
-  console.log("Username ", username);
-  console.log("usertype", userType);
-  console.log("password", password);
-  console.log("Number", number);
-
-  if (
-    [fullname, email, username, password, userType, Location].some((field) => {
-      field?.trim() === "";
-    })
-  ) {
-    throw new ApiError(400, "All Fields are Required");
+    // return success response
+    return res.status(201).json(new ApiResponse(200, createdUser, "User Created Successfully"));
+  } catch (error) {
+    // handle errors
+    if (error instanceof ApiError) {
+      return res.status(error.code).json(new ApiResponse(error.code, null, error.message));
+    } else {
+      // handle unexpected errors
+      console.error("Unexpected error:", error);
+      return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+    }
   }
-  if (Number == "") {
-    throw new ApiError(400, "All Fields are Required");
-  }
-  const existedUser = await User.findOne({ $or: [{ username }, { email }] });
-  if (existedUser) {
-    throw new ApiError(409, "User with email or password already exist");
-  }
-  if(userType !== "user") {
-    throw new ApiError(400, "userType Error");
-}
+};
 
-  const user = await User.create({
-    username,
-    email,
-    fullname,
-    userType,
-    password,
-    Location,
-    number,
-  });
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -userType"
-  );
-  if (!createdUser) {
-    throw new ApiError(
-      500,
-      "Something Went Wrong with the Registration of User"
-    );
-  }
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdUser, "User Creted Successfully"));
-});
 /*
  
  
