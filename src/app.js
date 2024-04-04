@@ -27,9 +27,9 @@ console.log('Current Date:', currentDate.toLocaleString());
   })
 //routes
 import userRouter from "./routes/user.routes.js";
-import BondRouter from "./routes/bond.router.js"
-import FormRouter from "./routes/Form.router.js"
-import StoreRouter from "./routes/Store.router.js"
+import BondRouter from "./routes/bond.routes.js"
+import FormRouter from "./routes/Form.routes.js"
+import StoreRouter from "./routes/Store.routes.js"
 //routes declaration
 app.use("/api/v1/users",userRouter)
 

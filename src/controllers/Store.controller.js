@@ -1,5 +1,5 @@
-import { Bond } from "../models/bonds.models.js";
-import { Store } from "../models/store.mdels.js";
+import { Bond } from "../models/bonds.model.js";
+import { Store } from "../models/store.mdel.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
