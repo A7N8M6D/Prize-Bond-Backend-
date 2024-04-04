@@ -138,11 +138,18 @@ const loginUser = asynchandler(async (req, res) => {
   const options = {
     httpOnly: true,
     secure: false,
+
   };
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, {
+      httpOnly:true,
+      sameSite:"lax",
+      maxAge: 1000 * 1000,
+      path: "/",
+      secure: false
+    })
+    // .cookie("refreshToken", refreshToken, options)
     .json(
       new ApiResponse(
         200,
