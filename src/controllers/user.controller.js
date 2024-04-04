@@ -12,7 +12,9 @@ const GenerRefreshAccessToken = async (userID) => {
     const accessToken = user.generatorAccesssToken();
     console.log("start");
     console.log("accesstoken" + JSON.stringify(accessToken));
+    console.log("1 accesss Token"+accessToken)
     const refresshToken = user.generateRefreshToken();
+    console.log("1 refresh Token"+refresshToken)
     console.log("refresh Token" + JSON.stringify(refresshToken));
     user.refreshToken = refresshToken;
     await user.save({
@@ -130,33 +132,34 @@ const loginUser = asynchandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid User Password or Usernmae");
   }
-  const { accessToken, refreshToken } = await GenerRefreshAccessToken(user.id);
-  console.log("token send" + refreshToken, accessToken);
+  
+  const { accessToken, refresshToken  } = await GenerRefreshAccessToken(user.id);
+  console.log("token send" + refresshToken, accessToken);
   const logginUser = await User.findById(user._id).select(
     "-password -refresToken"
   );
   const options = {
-    httpOnly: true,
-    secure: false,
+    httpOnly:true,
+    // sameSite:"lax",
+    // maxAge: 1000 * 1000,
+    // path: "/",
+    secure: false
+  
 
   };
+  console.log("user access"+accessToken);
+  console.log("user refresh"+refresshToken)
   return res
     .status(200)
-    .cookie("accessToken", accessToken, {
-      httpOnly:true,
-      sameSite:"lax",
-      maxAge: 1000 * 1000,
-      path: "/",
-      secure: false
-    })
-    // .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, options)
+     .cookie("refreshToken", refresshToken, options)
     .json(
       new ApiResponse(
         200,
         {
           user: logginUser,
           accessToken,
-          refreshToken,
+          refresshToken,
         },
         "User LoggedIn Successfully"
       )

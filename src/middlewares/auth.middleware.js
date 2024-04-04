@@ -5,9 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 export const verifyJWT = asynchandler(async (req, _, next) => {
   try {
-    const token =
-      req.cookies?.accessToken || 
-      req.header("Authorization")?.replace("Bearer ", "");
+    const token =req.cookies?.refreshToken || req.header("Authorization")?.replace("Bearer ", "");
     console.log("level 1");
     console.log("refreshtoken" + JSON.stringify(token));
     if (!token) {
