@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import Jwt from "jsonwebtoken";
 import { json } from "express";
+
 const GenerRefreshAccessToken = async (userID) => {
   try {
     const user = await User.findById(userID);
@@ -29,6 +30,7 @@ const GenerRefreshAccessToken = async (userID) => {
     );
   }
 };
+
 /*
  
  
@@ -36,6 +38,7 @@ const GenerRefreshAccessToken = async (userID) => {
 
 
 */
+
 const registerUser = asynchandler(async (req, res) => {
   //get data from the user
 
@@ -69,20 +72,30 @@ const registerUser = asynchandler(async (req, res) => {
       field?.trim() === "";
     })
   ) {
-    throw new ApiError(400, "All Fields are Required");
+    return res
+    .status(400)
+    .json( new ApiError(400, "All Fields are Required"));
+    
   }
   if (Number == "") {
-    throw new ApiError(400, "All Fields are Required");
+    
+    return res
+    .status(400)
+    .json( new ApiError(400, "Number Field are Required"));
   }
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existedUser) {
-    throw new ApiError(409, "User with email or password already exist");
+    
+    return res
+    .status(409)
+    .json(new ApiError(409, "User with email or password already exist"));
   }
   if (userType !== "user") {
-    const a= new ApiError(400, "userType Error");
-    console.log(a.message, a.statsCode);
-    throw a;
-  }
+ 
+    return res
+    .status(400)
+    .json(new ApiError(400, "userType Error"));
+   }
 
   const user = await User.create({
     username,
@@ -98,16 +111,20 @@ const registerUser = asynchandler(async (req, res) => {
     "-password -refreshToken -userType"
   );
   if (!createdUser) {
-    throw new ApiError(
+    
+    return res
+    .status(500)
+    .json(new ApiError(
       500,
       "Something Went Wrong with the Registration of User"
-    );
+    ));
   }
   console.log("hhzhxfzhjfgzhjzgfxj" + ApiError);
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, "User Creted Successfully"));
 });
+
 /*
  
  
@@ -115,6 +132,7 @@ const registerUser = asynchandler(async (req, res) => {
 
 
 */
+
 const loginUser = asynchandler(async (req, res) => {
   const { email, password } = req.body;
   // console.log(email);
@@ -165,6 +183,7 @@ const loginUser = asynchandler(async (req, res) => {
       )
     );
 });
+
 /*
  
  
@@ -172,6 +191,7 @@ const loginUser = asynchandler(async (req, res) => {
 
 
 */
+
 const refrshAccessToken = asynchandler(async (req, res) => {
   const incommingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -211,6 +231,7 @@ const refrshAccessToken = asynchandler(async (req, res) => {
     throw new ApiError(401, err?.message || "Invalid Refresh Token ");
   }
 });
+
 /*
  
  
@@ -218,6 +239,7 @@ const refrshAccessToken = asynchandler(async (req, res) => {
 
 
 */
+
 const logoutUser = asynchandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
@@ -264,6 +286,7 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Password changd Successfully"));
 });
+
 /*
  
  
@@ -271,6 +294,7 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
 
 
 */
+
 const GetCurrentUser = asynchandler(async (req, res) => {
   return res
     .status(200)
