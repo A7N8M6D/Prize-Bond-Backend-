@@ -83,7 +83,7 @@ const GetStore = asynchandler(async (req, res) => {
 */
 
 const GetAllStore = asynchandler(async (req, res) => {
-  const { howMany, location } = req.body;
+  const { howMany, location } = req.query;
   const stores = await Store.find({});
   const numberOfStores = stores.length;
   // Calculate the end index based on howMany
