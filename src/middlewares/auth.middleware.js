@@ -14,13 +14,16 @@ export const verifyJWT = asynchandler(async (req, _, next) => {
     }
     console.log("2");
     const decodedToken = Jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
+    console.log("3");
     console.log("decodedToken" + JSON.stringify(decodedToken));
+
     const user = await User.findById(decodedToken?._id).select(
       "-password -refreshToken"
     );
+    console.log("4");
     if (!user) {
       throw new ApiError(401, "Invalid Refresh Token");
+      console.log("5");
     }
     req.user = user;
     console.log("end");
