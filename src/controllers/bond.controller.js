@@ -29,26 +29,27 @@ const PrizeBondType = JSON.parse(PrizeBondTyp);
 let PrizeBondNumber =JSON.parse( PrizeBondNumbe);
  // Ensure PrizeBondNumbers is an array
 
-
+ console.log("1")
 // const PrizeBondNumber
 console.log("Prize Bond 1",PrizeBondNumber)
   if ((PrizeBondType === null) | (PrizeBondNumber == null)) {
     throw new ApiError(400, "Prize bond Number and Type are required");
   }
-
+console.log("2")
   const existedUser = await User.findOne({
     PrizeBondNumber,
   });
+  console.log("3")
   const BondsAlreadyCreated = await Bond.findOne({
     user: useR._id,
     PrizeBondType: PrizeBondType
   });
-  
+  console.log("4")
   if (BondsAlreadyCreated) {
     const filteredBondss = BondsAlreadyCreated.PrizeBondNumber;
     const filteredBondsss = filteredBondss.concat(PrizeBondNumber);
     const newB=BondsAlreadyCreated.PrizeBondNumber = filteredBondsss;
-  
+    console.log("5") 
     // Save the updated document
     await BondsAlreadyCreated.save();
     console.log("pop", filteredBondsss);
