@@ -1,15 +1,50 @@
 import mongoose ,{Schema} from "mongoose";
 const listschema=new Schema(
     {
-        IssueDate:
+        Date:
         {
-            type:Date,
+            type:Number,
             required:true
-        },ListSource:
+        }
+        ,Month:
         {
             type:String,
             required:true
         }
+        ,Year:
+        {
+            type:Number,
+            required:true
+        },PrizeBondAmount:
+        {
+            type:Number,
+            require:true
+        },FirstWin:
+        {
+            type:[Number],
+            require:true
+        },FirstPrize:
+        {
+            type:Number,
+            require:true
+        },SecondWin:
+        {
+            type:[Number],
+            require:true
+        },SecondPrize:
+        {
+            type:Number,
+            require:true
+        },ThirdWin:
+        {
+            type:[Number],
+            require:true
+        },ThirdPrize:
+        {
+            type:Number,
+            require:true
+        }
+        
     },{
        timestamps:true
     }

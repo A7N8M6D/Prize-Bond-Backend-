@@ -13,14 +13,24 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 
 const addNewBond = asynchandler(async (req, res) => {
-  const { PrizeBondTyp, PrizeBondNumbe, BuyYear, Buymonths } = req.body;
+  const { PrizeBondTyp, PrizeBondNumbe } = req.body;
 
   const useR = await User.findById(req.user?._id);
 
-  if ([BuyYear, Buymonths].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
-  }
-const PrizeBondNumber=parseInt(PrizeBondNumbe),PrizeBondType=parseInt(PrizeBondTyp)
+  // if ([BuyYear, Buymonths].some((field) => field?.trim() === "")) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
+  console.log("Prize Bond",PrizeBondNumbe)
+// const PrizeBondNumber=parseInt(PrizeBondNumbe),PrizeBondType=parseInt(PrizeBondTyp)
+
+
+const PrizeBondType = parseInt(PrizeBondTyp);
+let PrizeBondNumber = PrizeBondNumbe.split(',').map(num => parseInt(num.trim()));
+ // Ensure PrizeBondNumbers is an array
+
+
+// const PrizeBondNumber
+console.log("Prize Bond 1",PrizeBondNumber)
   if ((PrizeBondType === null) | (PrizeBondNumber == null)) {
     throw new ApiError(400, "Prize bond Number and Type are required");
   }
@@ -28,24 +38,43 @@ const PrizeBondNumber=parseInt(PrizeBondNumbe),PrizeBondType=parseInt(PrizeBondT
   const existedUser = await User.findOne({
     PrizeBondNumber,
   });
+  const BondsAlreadyCreated = await Bond.findOne({
+    user: useR._id,
+    PrizeBondType: PrizeBondType
+  });
+  
+  if (BondsAlreadyCreated) {
+    const filteredBondss = BondsAlreadyCreated.PrizeBondNumber;
+    const filteredBondsss = filteredBondss.concat(PrizeBondNumber);
+    const newB=BondsAlreadyCreated.PrizeBondNumber = filteredBondsss;
+  
+    // Save the updated document
+    await BondsAlreadyCreated.save();
+    console.log("pop", filteredBondsss);
+    return res
+    .status(201)
+    .json(new ApiResponse(200, newB, "Bond Save Successfully"));
+  }
+  else{
+// console.log("ggjgh",filteredBonds);
+// console.log("Type and user", BondsAlreadyCreated)
   console.log("user of bond" + useR._id);
   if (existedUser) {
     throw new ApiError(409, "Prize Bond Number already Exist");
-  }
-
+}
+console.log( PrizeBondNumber)
   const createdbond = await Bond.create({
     PrizeBondType,
     PrizeBondNumber,
-    BuyYear,
-    Buymonths,
     user: useR._id,
-  });
+});
   if (!createdbond) {
     throw new ApiError(500, "Bond not Save Something went wrong");
   }
   return res
     .status(201)
     .json(new ApiResponse(200, createdbond, "Bond Save Successfully"));
+}
 });
 
 /*

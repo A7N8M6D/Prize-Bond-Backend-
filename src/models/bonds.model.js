@@ -6,18 +6,8 @@ const bondschema = new Schema(
       required: true,
     },
     PrizeBondNumber: {
-      type: Number,
+      type: [Number],
       required: true,
-    },
-    win: {
-      type: Boolean,
-       default:false
-    },
-    BuyYear:{
-      type:String
-    },
-    Buymonths:{
-      type:String
     },
     user: {
       type: Schema.Types.ObjectId,
