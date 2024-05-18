@@ -24,8 +24,9 @@ const addNewBond = asynchandler(async (req, res) => {
 // const PrizeBondNumber=parseInt(PrizeBondNumbe),PrizeBondType=parseInt(PrizeBondTyp)
 
 
-const PrizeBondType = parseInt(PrizeBondTyp);
-let PrizeBondNumber = PrizeBondNumbe.split(',').map(num => parseInt(num.trim()));
+const PrizeBondType = JSON.parse(PrizeBondTyp);
+
+let PrizeBondNumber =JSON.parse( PrizeBondNumbe);
  // Ensure PrizeBondNumbers is an array
 
 

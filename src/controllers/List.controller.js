@@ -172,7 +172,7 @@ const addNewList = asynchandler(async (req, res) => {
           }
         }
         // Special handling for "1696 Prize(s) of"
-        if (SplitedString == "First Prize of" || SplitedString == "Second Prize of"||SplitedString=="1696 Prize(s) of") {
+        if (SplitedString == "First Prize of" || SplitedString == "Second Prize of"||SplitedString=="1696 Prize") {
           // Regular expression to match all six-digit numbers
           let regex = /\b\d{6}\b/g;
           console.log("Special handling regex: ", regex);
@@ -182,11 +182,11 @@ const addNewList = asynchandler(async (req, res) => {
             }
             if(SplitedString=="Second Prize of")
               {
-              afterPrize=afterPrize.split("1696 Prize(s) of")
+              afterPrize=afterPrize.split("1696 Prize")
               }
-              if(SplitedString=="1696 Prize(s) of")
+              if(SplitedString=="1696 Prize")
                 {
-                afterPrize=afterPrize.split("1696 Prize(s) of")
+                afterPrize=afterPrize.split("1696 Prize")
                 }
             afterPrize=afterPrize[0];
           // Extract the numbers
@@ -211,7 +211,7 @@ const addNewList = asynchandler(async (req, res) => {
     );
 
     // Extract all prize numbers after the "1696 Prize(s) of" line
-    let allPrizeNumbers = extractFirstPrizeNumber(data, "1696 Prize(s) of", 0);
+    let allPrizeNumbers = extractFirstPrizeNumber(data, "1696 Prize", 0);
     console.log("alll", firstPrizeNumber);
     console.log("alll", secondPrizeNumbers);
     console.log("alll", allPrizeNumbers);
