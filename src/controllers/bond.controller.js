@@ -26,16 +26,16 @@ const addNewBond = asynchandler(async (req, res) => {
 
 const PrizeBondType = JSON.parse(PrizeBondTyp);
 
+console.log("1")
 let PrizeBondNumber =JSON.parse( PrizeBondNumbe);
  // Ensure PrizeBondNumbers is an array
+ console.log("2")
 
- console.log("1")
 // const PrizeBondNumber
 console.log("Prize Bond 1",PrizeBondNumber)
   if ((PrizeBondType === null) | (PrizeBondNumber == null)) {
     throw new ApiError(400, "Prize bond Number and Type are required");
   }
-console.log("2")
   const existedUser = await User.findOne({
     PrizeBondNumber,
   });
