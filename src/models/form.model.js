@@ -11,7 +11,7 @@ const formschema = new Schema(
     },
     Status: {
       type: Boolean,
-      default:false
+      default: false,
     },
     user: {
       type: Schema.Types.ObjectId,

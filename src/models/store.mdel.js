@@ -8,21 +8,22 @@ const storeschema = new Schema(
     Description: {
       type: String,
       required: true,
-    },Location:
-    {
-      type:String
-    } ,number:{
-      type:String
-    }, Email:
-    {
-       type:String
-    } , Name:
-    {
-      type:String
-    }
+    },
+    Location: {
+      type: String,
+    },
+    number: {
+      type: String,
+    },
+    Email: {
+      type: String,
+    },
+    Name: {
+      type: String,
+    },
   },
   {
     timestamps: true,
   }
 );
-export const Store=mongoose.model("Store", storeschema);
+export const Store = mongoose.model("Store", storeschema);
