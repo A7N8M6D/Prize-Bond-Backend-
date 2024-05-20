@@ -21,7 +21,7 @@ const listschema=new Schema(
             require:true
         },FirstWin:
         {
-            type:[Number],
+            type:[String],
             require:true
         },FirstPrize:
         {
@@ -29,7 +29,7 @@ const listschema=new Schema(
             require:true
         },SecondWin:
         {
-            type:[Number],
+            type:[String],
             require:true
         },SecondPrize:
         {
@@ -37,7 +37,7 @@ const listschema=new Schema(
             require:true
         },ThirdWin:
         {
-            type:[Number],
+            type:[String],
             require:true
         },ThirdPrize:
         {

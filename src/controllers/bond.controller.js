@@ -87,9 +87,13 @@ console.log( PrizeBondNumber)
                                                         
                                                          
 */
+
 const GetAllBond = asynchandler(async (req, res) => {
+  const { BondType } = req.query;
+  console.log("first")
   const allbonds = req.user._id;
-  const bonds = await Bond.find({ user: allbonds });
+  console.log("Second")
+  const bonds = await Bond.find({ user: allbonds,PrizeBondType:BondType });
 
   return res
     .status(200)

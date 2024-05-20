@@ -7,7 +7,7 @@ const bondschema = new Schema(
     },
     PrizeBondNumber: {
       type: [Number],
-      required: true,
+      required: String,
     },
     user: {
       type: Schema.Types.ObjectId,
