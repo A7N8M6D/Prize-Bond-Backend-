@@ -94,7 +94,7 @@ const GetAllBond = asynchandler(async (req, res) => {
   const allbonds = req.user._id;
   console.log("Second")
   const bonds = await Bond.find({ user: allbonds,PrizeBondType:BondType });
-
+console.log("bonds",bonds)
   return res
     .status(200)
     .json(new ApiResponse(200, bonds, "User Fetched Succesfully"));
