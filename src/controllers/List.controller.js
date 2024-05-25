@@ -18,7 +18,7 @@ import fs from "fs/promises"; // Import the promises API from the fs module
 const addNewList = asynchandler(async (req, res) => {
   let FirstWinPrize, SecondWinPrize, ThirdWinPrize;
 
-  console.log("File ", req.files?.List[0]);
+  //console.log("File ", req.files?.List[0]);
   const avatarLocalPath = req.files?.List[0]?.path;
 
   try {

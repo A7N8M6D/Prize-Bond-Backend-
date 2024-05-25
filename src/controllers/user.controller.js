@@ -13,9 +13,9 @@ const GenerRefreshAccessToken = async (userID) => {
     const accessToken = user.generatorAccesssToken();
     console.log("start");
     console.log("accesstoken" + JSON.stringify(accessToken));
-    console.log("1 accesss Token"+accessToken)
+    console.log("1 accesss Token" + accessToken);
     const refresshToken = user.generateRefreshToken();
-    console.log("1 refresh Token"+refresshToken)
+    console.log("1 refresh Token" + refresshToken);
     console.log("refresh Token" + JSON.stringify(refresshToken));
     user.refreshToken = refresshToken;
     await user.save({
@@ -72,26 +72,19 @@ const registerUser = asynchandler(async (req, res) => {
       field?.trim() === "";
     })
   ) {
-    return res
-    .status(400)
-    .json( new ApiError(400, "All Fields are Required"));
-    
+    return res.status(400).json(new ApiError(400, "All Fields are Required"));
   }
   if (Number == "") {
-    
-    return res
-    .status(400)
-    .json( new ApiError(400, "Number Field are Required"));
+    return res.status(400).json(new ApiError(400, "Number Field are Required"));
   }
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existedUser) {
-    
     return res
-    .status(409)
-    .json(new ApiError(409, "User with email or password already exist"));
+      .status(409)
+      .json(new ApiError(409, "User with email or password already exist"));
   }
   //  if (userType !== "user") {
- 
+
   //   return res
   //   .status(400)
   //   .json(new ApiError(400, "userType Error"));
@@ -111,13 +104,11 @@ const registerUser = asynchandler(async (req, res) => {
     "-password -refreshToken -userType"
   );
   if (!createdUser) {
-    
     return res
-    .status(500)
-    .json(new ApiError(
-      500,
-      "Something Went Wrong with the Registration of User"
-    ));
+      .status(500)
+      .json(
+        new ApiError(500, "Something Went Wrong with the Registration of User")
+      );
   }
   console.log("hhzhxfzhjfgzhjzgfxj" + ApiError);
   return res
@@ -150,27 +141,25 @@ const loginUser = asynchandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid User Password or Usernmae");
   }
-  
-  const { accessToken, refresshToken  } = await GenerRefreshAccessToken(user.id);
+
+  const { accessToken, refresshToken } = await GenerRefreshAccessToken(user.id);
   console.log("token send" + refresshToken, accessToken);
   const logginUser = await User.findById(user._id).select(
     "-password -refresToken"
   );
   const options = {
-    httpOnly:true,
+    httpOnly: true,
     // sameSite:"lax",
     // maxAge: 1000 * 1000,
     // path: "/",
-    secure: false
-  
-
+    secure: false,
   };
-  console.log("user access"+accessToken);
-  console.log("user refresh"+refresshToken)
+  console.log("user access" + accessToken);
+  console.log("user refresh" + refresshToken);
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-     .cookie("refreshToken", refresshToken, options)
+    .cookie("refreshToken", refresshToken, options)
     .json(
       new ApiResponse(
         200,

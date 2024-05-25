@@ -15,13 +15,13 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 //Experience,Description,Status
 const addForm = asynchandler(async (req, res) => {
-  const { Experience,Description } = req.body;
+  const { Experience, Description } = req.body;
 
   const useR = await Form.findById(req.user?._id);
-  if ([Description ,Experience].some((field) => field?.trim() === "")) {
+  if ([Description, Experience].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "fields are required");
   }
-  
+
   // const existedStore = await Store.findById({
   //   req.user?._id
   // });
@@ -67,9 +67,6 @@ const GetForm = asynchandler(async (req, res) => {
                                                          
 */
 
-
-
-
 const GetAllForm = asynchandler(async (req, res) => {
   const allForm = req.user._id;
   const form = await Form.find({});
@@ -87,25 +84,21 @@ const GetAllForm = asynchandler(async (req, res) => {
 */
 
 const UpdateForm = asynchandler(async (req, res) => {
-  const {
-    status,typeUser
-  } = req.body;
-  const user =req.req.user._id;
+  const { status, typeUser } = req.body;
+  const user = req.req.user._id;
 
   const form = await Form.findById(store_id);
   if (!form) {
     throw new ApiError(400, "Invalid Form");
   }
-  form.Status="true";
-  
+  form.Status = "true";
+
   await Form.save({ validateBeforeSave: false });
-  user.userTyoe="broker";
-  
+  user.userTyoe = "broker";
+
   await user.save({ validateBeforeSave: false });
-  
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, " Broker Good Luck!"));
+
+  return res.status(200).json(new ApiResponse(200, {}, " Broker Good Luck!"));
 });
 /*
                                                          
@@ -115,16 +108,16 @@ const UpdateForm = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteForm = asynchandler(async (req, res) => {
-  const {Form_id}=req.body
+  const { Form_id } = req.body;
   const deletedForm = await Form.findByIdAndDelete(Form_id);
 
   // Check if the bond exists
   if (!deletedForm) {
     throw new ApiError(400, " Form Not Found");
   }
-  
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Form Delete Successfully"));
 });
-export { addForm, GetForm, UpdateForm, DeleteForm , GetAllForm };
+export { addForm, GetForm, UpdateForm, DeleteForm, GetAllForm };
