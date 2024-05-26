@@ -83,12 +83,12 @@ const registerUser = asynchandler(async (req, res) => {
       .status(409)
       .json(new ApiError(409, "User with email or password already exist"));
   }
-  //  if (userType !== "user") {
+   if (userType !== "user") {
 
-  //   return res
-  //   .status(400)
-  //   .json(new ApiError(400, "userType Error"));
-  //  }
+    return res
+    .status(400)
+    .json(new ApiError(400, "userType Error"));
+   }
 
   const user = await User.create({
     username,
@@ -119,7 +119,7 @@ const registerUser = asynchandler(async (req, res) => {
 /*
  
  
------------------        Sign In User        -----------------
+-----------------        Sign IN User        -----------------
 
 
 */
