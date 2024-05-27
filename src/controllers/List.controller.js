@@ -19,6 +19,8 @@ const addNewList = asynchandler(async (req, res) => {
   let FirstWinPrize, SecondWinPrize, ThirdWinPrize;
 console.log("File")
   //console.log("File ", req.files?.List[0]);
+  console.log("List",req.files)
+  console.log("List",req.files.List[0])
   const avatarLocalPath = req.files?.List[0]?.path;
 
   try {
