@@ -249,16 +249,28 @@ const verifyList = asynchandler(async (req, res) => {
 */
 
 const GetList = asynchandler(async (req, res) => {
-  const { month, year } = req.query;
-  const bond = await Bond.findById(bonnd_id);
-  if (month == "" && year) {
+  console.log("1");
+  let { month, year } = req.query;
+  month = parseInt(month);
+  year = parseInt(year);
+  
+  // Check if month is NaN (Not a Number)
+  if (isNaN(month) && isNaN(year)) {
     const uniqueYears = await List.distinct("Year");
-    query = { year: { $in: uniqueYears } };
+    const query = { year: { $in: uniqueYears } };
 
     return res
       .status(200)
       .json(new ApiResponse(200, query, "Fetched Successfully"));
-  } else {
+  } else if(isNaN(month) && year){
+    const uniqueMonths = await List.distinct("Month", { Year: year });
+
+    const query = {  month: { $in: uniqueMonths } };
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, query, "Fetched Successfully"));
+  }else {
     const bonds = await List.find({ Year: year, Month: month });
     return res
       .status(200)
@@ -272,17 +284,68 @@ const GetList = asynchandler(async (req, res) => {
                                                         
                                                          
 */
-const DeleteBond = asynchandler(async (req, res) => {
-  const { bond_id } = req.body;
-  const deletedBond = await Bond.findByIdAndDelete(bond_id);
+// Import necessary modules and models
+// const List = require('./models/List'); // Import your List model
 
-  // Check if the bond exists
-  if (!deletedBond) {
-    throw new ApiError(400, " Bond Not Found");
-  }
+// Define your asynchronous handler function
+const FindNumber = asynchandler(async (req, res) => {
+  let { number,PrizeBondAmount,Month,Year} = req.query;
+  console.log(number);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Bond Delete Successfully"));
+  let results; // Declare results variable here
+
+  try {
+    // Query the List model to find documents matching the number
+   // Construct the initial query conditions
+let queryConditions = {};
+
+// Check if Month is present in the query
+if (Month) {
+  queryConditions.Month = parseInt(Month);
+}
+
+// Check if Year is present in the query
+if (Year) {
+  queryConditions.Year = parseInt(Year);
+}
+
+// Check if PrizeBondAmount is present in the query
+if (PrizeBondAmount) {
+  queryConditions.PrizeBondAmount = PrizeBondAmount;
+}
+
+// Construct the final query
+let query = {
+  $and: [queryConditions, {
+    $or: [
+      { FirstWin: { $elemMatch: { $regex: number, $options: 'i' } }, FirstWin: { $size: 0 } },
+      { SecondWin: { $elemMatch: { $regex: number, $options: 'i' } }, SecondWin: { $size: 0 } },
+      { ThirdWin: { $elemMatch: { $regex: number, $options: 'i' } }, ThirdWin: { $size: 0 } }
+    ]
+  }]
+};
+
+// Run the query
+results = await List.find(query).select({ 
+  Date: 1,
+  Month: 1,
+  Year: 1,
+  PrizeBondAmount: 1,
+  FirstPrize: 1,
+  SecondPrize: 1,
+  ThirdPrize: 1,
+  FirstWin: { $elemMatch: { $regex: number, $options: 'i' } },
+  SecondWin: { $elemMatch: { $regex: number, $options: 'i' } },
+  ThirdWin: { $elemMatch: { $regex: number, $options: 'i' } }
 });
-export { addNewList, verifyList, GetList, DeleteBond };
+    return res
+      .status(200)
+      .json(new ApiResponse(200, results, "Fetched Successfully"));
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+  }
+});
+
+export { addNewList, verifyList, GetList, FindNumber };

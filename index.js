@@ -1,4 +1,3 @@
-
 import connectDB from "./src/db/index.js";
 import dotenv from 'dotenv';
 import { app } from "./src/app.js";
@@ -21,9 +20,6 @@ connectDB().then(()=>{
 .catch((err)=>{
     console.log("Mongo DB connection Failed", err)
 });
-
-
-
 
 /*
 ;(
