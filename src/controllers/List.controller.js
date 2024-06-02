@@ -250,28 +250,30 @@ const verifyList = asynchandler(async (req, res) => {
 
 const GetList = asynchandler(async (req, res) => {
   console.log("1");
-  let { month, year } = req.query;
+  let { type,month, year } = req.query;
+  type = parseInt(type);
   month = parseInt(month);
   year = parseInt(year);
   
   // Check if month is NaN (Not a Number)
-  if (isNaN(month) && isNaN(year)) {
-    const uniqueYears = await List.distinct("Year");
-    const query = { year: { $in: uniqueYears } };
+  if (isNaN(month) && year) {
+    const uniqueMonth = await List.distinct("Month", { PrizeBondAmount: type , Year:year});
+
+    const query = {  month: { $in: uniqueMonth } };
 
     return res
       .status(200)
       .json(new ApiResponse(200, query, "Fetched Successfully"));
-  } else if(isNaN(month) && year){
-    const uniqueMonths = await List.distinct("Month", { Year: year });
+  } else if(isNaN(month) && isNaN(month)&& type){
+    const uniqueYear = await List.distinct("Year", { PrizeBondAmount: type });
 
-    const query = {  month: { $in: uniqueMonths } };
+    const query = {  month: { $in: uniqueYear } };
 
     return res
       .status(200)
       .json(new ApiResponse(200, query, "Fetched Successfully"));
   }else {
-    const bonds = await List.find({ Year: year, Month: month });
+    const bonds = await List.find({ Year: year, Month: month,PrizeBondAmount: type  });
     return res
       .status(200)
       .json(new ApiResponse(200, bonds, "Fetched Successfully"));
