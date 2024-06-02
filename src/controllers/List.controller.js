@@ -254,13 +254,22 @@ const GetList = asynchandler(async (req, res) => {
   // type = parseInt(type);
   month = parseInt(month);
   year = parseInt(year);
+  if (typeof year !== 'number' || typeof month !== 'number' || typeof type !== 'string') {
+    throw new Error('Invalid input: Year and month must be numbers, and type must be a string.');
+}
   console.log(typeof type,month,year)
   // Check if month is NaN (Not a Number)
+
   if (isNaN(month) && year) {
     const uniqueMonth = await List.distinct("Month", { PrizeBondAmount: type , Year:year});
 
     const query = {  month: { $in: uniqueMonth } };
-
+    if(!query)
+      {
+        return res
+      .status(404)
+      .json(new ApiResponse(404,  "Type Not Found"));
+      }
     return res
       .status(200)
       .json(new ApiResponse(200, query, "Fetched Successfully"));
@@ -269,12 +278,24 @@ const GetList = asynchandler(async (req, res) => {
     const uniqueYear = await List.distinct("Year", { PrizeBondAmount: type });
 
     const query = {  month: { $in: uniqueYear } };
-
+    if(!query)
+      {
+        return res
+      .status(404)
+      .json(new ApiResponse(404,  "Month Not Found"));
+      }
     return res
       .status(200)
       .json(new ApiResponse(200, query, "Fetched Successfully"));
+      
   }else {
     const bonds = await List.find({ Year: year, Month: month,PrizeBondAmount: type  });
+    if(!bonds)
+      {
+        return res
+      .status(404)
+      .json(new ApiResponse(404,  "Bond Not Found"));
+      }
     return res
       .status(200)
       .json(new ApiResponse(200, bonds, "Fetched Successfully"));
