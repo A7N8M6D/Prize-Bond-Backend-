@@ -262,7 +262,7 @@ const GetList = asynchandler(async (req, res) => {
   // Check if month is NaN (Not a Number)
 
   if (isNaN(month) && year) {
-    const uniqueMonth = await List.distinct("month", { PrizeBondAmount: type , Year:year});
+    const uniqueMonth = await List.distinct("Month", { PrizeBondAmount: type , Year:year});
 
     const query = {  month: { $in: uniqueMonth } };
     if(!query)
@@ -276,9 +276,9 @@ const GetList = asynchandler(async (req, res) => {
       .json(new ApiResponse(200, query, "Fetched Successfully"));
   } else if(isNaN(month) && isNaN(month)&& type){
     console.log("2")
-    const uniqueYear = await List.distinct("year", { PrizeBondAmount: type });
+    const uniqueYear = await List.distinct("Year", { PrizeBondAmount: type });
 
-    const query = {  month: { $in: uniqueYear } };
+    const query = {  year: { $in: uniqueYear } };
     if(!query)
       {
         return res
