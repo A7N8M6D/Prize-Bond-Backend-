@@ -254,7 +254,7 @@ const GetList = asynchandler(async (req, res) => {
   // type = parseInt(type);
   month = parseInt(month);
   year = parseInt(year);
-  console.log{type,month,year}
+  console.log(typeof type,month,year)
   // Check if month is NaN (Not a Number)
   if (isNaN(month) && year) {
     const uniqueMonth = await List.distinct("Month", { PrizeBondAmount: type , Year:year});
