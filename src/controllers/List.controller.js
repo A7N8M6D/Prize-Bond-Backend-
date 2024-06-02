@@ -258,6 +258,7 @@ const GetList = asynchandler(async (req, res) => {
     throw new Error('Invalid input: Year and month must be numbers, and type must be a string.');
 }
   console.log(typeof type,month,year)
+  console.log( type,month,year)
   // Check if month is NaN (Not a Number)
 
   if (isNaN(month) && year) {
