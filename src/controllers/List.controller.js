@@ -251,7 +251,7 @@ const verifyList = asynchandler(async (req, res) => {
 const GetList = asynchandler(async (req, res) => {
   console.log("1");
   let { type,month, year } = req.query;
-  type = parseInt(type);
+  // type = parseInt(type);
   month = parseInt(month);
   year = parseInt(year);
   
