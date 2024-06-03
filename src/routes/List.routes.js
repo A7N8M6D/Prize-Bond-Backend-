@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { FindNumber, GetList, addNewList } from "../controllers/List.controller.js";
+import { FindNumber, GetInfo, GetList, addNewList } from "../controllers/List.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { GetForm } from "../controllers/Form.controller.js";
 const router=Router();
@@ -13,4 +13,6 @@ router.route("/add").post(  upload.fields([
     }] ) ,addNewList);
 router.route("/getList").get(GetList);
 router.route("/FindNumber").get(FindNumber);
+router.route("/FindInfo").get(GetInfo);
+
 export default router

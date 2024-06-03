@@ -302,6 +302,32 @@ const GetList = asynchandler(async (req, res) => {
       .json(new ApiResponse(200, bonds, "Fetched Successfully"));
   }
 });
+
+
+const GetInfo = asynchandler(async (req, res) => {
+  try {
+    let { type } = req.query;
+    
+    if (!type) {
+      return res.status(400).json(new ApiResponse(400, "Type query parameter is required"));
+    }
+
+    // Construct the query object
+    let query = { PrizeBondAmount: type };
+    
+    // Find documents with the specified PrizeBondAmount and project only Date, Month, and Year fields
+    const bonds = await List.find(query, 'Date Month Year');
+    
+    if (!bonds.length) {
+      return res.status(404).json(new ApiResponse(404, "No records found for the provided parameters"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, bonds, "Fetched Successfully"));
+  } catch (error) {
+    console.error('Error fetching information:', error);
+    return res.status(500).json(new ApiResponse(500, "Internal Server Error"));
+  }
+});
 /*
                                                          
                                                          
@@ -373,4 +399,4 @@ results = await List.find(query).select({
   }
 });
 
-export { addNewList, verifyList, GetList, FindNumber };
+export { addNewList, verifyList, GetList, FindNumber,GetInfo };
