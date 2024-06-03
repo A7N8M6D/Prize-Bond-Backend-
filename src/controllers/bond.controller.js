@@ -157,15 +157,13 @@ const UpdateBond = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteBond = asynchandler(async (req, res) => {
-  const { bond_id, number } = req.body;
-
+  const {  number,type } = req.query;
+  const User = req.user._id;
 try {
   // Find the bond by ID and update it by pulling the specific prize bond number from the array
-  const updatedBond = await Bond.findByIdAndUpdate(
-    bond_id,
-    {
-      $pull: { PrizeBondNumber: number }
-    },
+  const updatedBond = await Bond.findOneAndUpdate(
+    { user: User, PrizeBondType: type },
+    { $pull: { PrizeBondNumber: number } },
     { new: true } // Return the updated document
   );
 
