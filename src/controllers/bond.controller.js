@@ -157,24 +157,26 @@ const UpdateBond = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteBond = asynchandler(async (req, res) => {
-  const {  number,type } = req.query;
-  const User = req.user._id;
-try {
-  // Find the bond by ID and update it by pulling the specific prize bond number from the array
-  const updatedBond = await Bond.findOneAndUpdate(
-    { user: User, PrizeBondType: type },
-    { $pull: { PrizeBondNumber: number } },
-    { new: true } // Return the updated document
-  );
+  const { number, type } = req.query;
+  const user = req.user._id;
 
-  if (updatedBond) {
-    res.status(200).json({ message: 'Prize bond number deleted successfully', updatedBond });
-  } else {
-    res.status(404).json({ message: 'Bond not found' });
+  try {
+    // Find the bond by user and type, and remove the specific prize bond number from the array
+    const updatedBond = await Bond.findOneAndUpdate(
+      { user: user, PrizeBondType: type },
+      { $pull: { PrizeBondNumber: number } },
+      { new: true } // Return the updated document
+    );
+
+    if (updatedBond) {
+      res.status(200).json({ message: 'Prize bond number deleted successfully', updatedBond });
+    } else {
+      res.status(404).json({ message: 'Bond not found' });
+    }
+  } catch (error) {
+    console.error('Error updating bond:', error);
+    res.status(500).json({ message: 'An error occurred', error });
   }
-} catch (error) {
-  res.status(500).json({ message: 'An error occurred', error });
-}
 
 });
 export { addNewBond, GetAllBond, UpdateBond, DeleteBond };
