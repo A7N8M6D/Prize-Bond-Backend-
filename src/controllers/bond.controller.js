@@ -157,16 +157,26 @@ const UpdateBond = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteBond = asynchandler(async (req, res) => {
-  const { bond_id } = req.body;
-  const deletedBond = await Bond.findByIdAndDelete(bond_id);
+  const { bond_id, number } = req.body;
 
-  // Check if the bond exists
-  if (!deletedBond) {
-    throw new ApiError(400, " Bond Not Found");
+try {
+  // Find the bond by ID and update it by pulling the specific prize bond number from the array
+  const updatedBond = await Bond.findByIdAndUpdate(
+    bond_id,
+    {
+      $pull: { PrizeBondNumber: number }
+    },
+    { new: true } // Return the updated document
+  );
+
+  if (updatedBond) {
+    res.status(200).json({ message: 'Prize bond number deleted successfully', updatedBond });
+  } else {
+    res.status(404).json({ message: 'Bond not found' });
   }
+} catch (error) {
+  res.status(500).json({ message: 'An error occurred', error });
+}
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Bond Delete Successfully"));
 });
 export { addNewBond, GetAllBond, UpdateBond, DeleteBond };
