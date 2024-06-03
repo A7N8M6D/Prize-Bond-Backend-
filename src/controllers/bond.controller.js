@@ -157,9 +157,9 @@ const UpdateBond = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteBond = asynchandler(async (req, res) => {
-  const { number, type } = req.query;
+  let { number, type } = req.query;
   const user = req.user._id;
-
+type=parseInt ( type)
   try {
     // Find the bond by user and type, and remove the specific prize bond number from the array
     const updatedBond = await Bond.findOneAndUpdate(
