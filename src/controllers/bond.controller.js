@@ -159,6 +159,7 @@ const UpdateBond = asynchandler(async (req, res) => {
 const DeleteBond = asynchandler(async (req, res) => {
   let { number, type } = req.query;
   const user = req.user._id;
+  console.log("user conatian bond",user)
 type=parseInt ( type)
   try {
     // Find the bond by user and type, and remove the specific prize bond number from the array
