@@ -68,7 +68,7 @@ const GetForm = asynchandler(async (req, res) => {
 const CheckForm = asynchandler(async (req, res) => {
   const allForm = req.user._id;
   try {
-    const form = await Form.findById(allForm);
+    const form = await Form.find({ user: allForm });
     if (form) {
         // If form is found, return its status
         return res.json({ status: 'created', formStatus: form.status });
@@ -88,13 +88,28 @@ const CheckForm = asynchandler(async (req, res) => {
 */
 
 const GetAllForm = asynchandler(async (req, res) => {
+  const { page = 1 } = req.query;
+  const limit = 10
   const allForm = req.user._id;
-  const form = await Form.find({});
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, form, "Form Fetched Succesfully"));
+  try {
+      const forms = await Form.find({ user: allForm })
+          .limit(limit * 1)
+          .skip((page - 1) * limit)
+          .exec();
+
+      const count = await Form.countDocuments({ user: allForm });
+
+      return res.status(200).json(new ApiResponse(200, {
+          forms,
+          totalPages: Math.ceil(count / limit),
+          currentPage: page
+      }, "Forms Fetched Successfully"));
+  } catch (error) {
+      return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+  }
 });
+
 /*
                                                          
                                                          
