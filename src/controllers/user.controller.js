@@ -72,22 +72,23 @@ const registerUser = asynchandler(async (req, res) => {
       field?.trim() === "";
     })
   ) {
-    return res.status(400).json(new ApiError(400, "All Fields are Required"));
+    throw new ApiError(400, "All Fields are Required")
+    
   }
   if (Number == "") {
-    return res.status(400).json(new ApiError(400, "Number Field are Required"));
+    throw new ApiError(400, "Number Field are Required")
+    
   }
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existedUser) {
-    return res
-      .status(409)
-      .json(new ApiError(409, "User with email or password already exist"));
+    throw new ApiError(409, "User with email or password already exist")
+    
   }
    if (userType !== "user") {
 
-    return res
-    .status(400)
-    .json(new ApiError(400, "userType Error"));
+ 
+    throw new ApiError(400, "userType Error")
+    
    }
 
   const user = await User.create({
@@ -104,10 +105,7 @@ const registerUser = asynchandler(async (req, res) => {
     "-password -refreshToken -userType"
   );
   if (!createdUser) {
-    return res
-      .status(500)
-      .json(
-        new ApiError(500, "Something Went Wrong with the Registration of User")
+    throw new ApiError(500, "Something Wrong with the registration")
       );
   }
   console.log("hhzhxfzhjfgzhjzgfxj" + ApiError);
