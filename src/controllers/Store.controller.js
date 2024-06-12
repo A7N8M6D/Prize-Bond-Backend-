@@ -88,7 +88,7 @@ const GetAllStore = asynchandler(async (req, res) => {
   const numberOfStores = stores.length;
   // Calculate the end index based on howMany
   let howMan = parseInt(howMany);
-  let endIndex = howMan + 2;
+  let endIndex = howMan + 10;
 
   // Declare variables to store selected stores
   let selectedStore, selectedStores;
