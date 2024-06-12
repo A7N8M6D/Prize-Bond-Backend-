@@ -38,27 +38,9 @@ const GenerRefreshAccessToken = async (userID) => {
 
 
 */
-
-const registerUser = asynchandler(async (req, res) => {
-  //get data from the user
-
-  //validation
-
-  //check if the user already exist     email   password
-
-  //check for images
-
-  // upload to clodinary
-
-  //user object  using create entry in db
-
-  //remove password and refresh token
-
-  //res recieve or not and user signed or not
-
-  //res return
-  const { fullname, email, username, password, userType, Location, number } =
-    req.body;
+const registerUser = asyncHandler(async (req, res) => {
+  // Extract data from the request body
+  const { fullname, email, username, password, userType, Location, number } = req.body;
   console.log("email", email);
   console.log("name ", fullname);
   console.log("Location", Location);
@@ -67,53 +49,52 @@ const registerUser = asynchandler(async (req, res) => {
   console.log("password", password);
   console.log("Number", number);
 
-  if (
-    [fullname, email, username, password, userType, Location].some((field) => {
-      field?.trim() === "";
-    })
-  ) {
-    throw new ApiError(400, "All Fields are Required")
-    
+  // Validate required fields
+  if ([fullname, email, username, password, userType, Location].some((field) => field?.trim() === "")) {
+    return res.status(400).json({ error: "All fields are required" });
   }
-  if (Number == "") {
-    throw new ApiError(400, "Number Field are Required")
-    
+
+  // Validate the number field
+  if (number === "") {
+    return res.status(400).json({ error: "Number field is required" });
   }
+
+  // Check if user already exists
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existedUser) {
-    throw new ApiError(409, "User with email or password already exist")
-    
+    return res.status(409).json({ error: "User with this email or username already exists" });
   }
-   if (userType !== "user") {
 
- 
-    throw new ApiError(400, "userType Error")
-    
-   }
-
-  const user = await User.create({
-    username,
-    email,
-    fullname,
-    userType,
-    password,
-    Location,
-    number,
-  });
-
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken -userType"
-  );
-  if (!createdUser) {
-    throw new ApiError(500, "Something Wrong with the registration")
-      
+  // Validate userType
+  if (userType !== "user") {
+    return res.status(400).json({ error: "Invalid userType" });
   }
-  console.log("hhzhxfzhjfgzhjzgfxj" + ApiError);
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdUser, "User Creted Successfully"));
+
+  // Create user
+  try {
+    const user = await User.create({
+      username,
+      email,
+      fullname,
+      userType,
+      password,
+      Location,
+      number,
+    });
+
+    // Remove sensitive fields from the created user object
+    const createdUser = await User.findById(user._id).select("-password -refreshToken");
+    if (!createdUser) {
+      return res.status(500).json({ error: "Something went wrong with the registration" });
+    }
+
+    // Return success response
+    return res.status(201).json(new ApiResponse(200, createdUser, "User created successfully"));
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 });
-
 /*
  
  
