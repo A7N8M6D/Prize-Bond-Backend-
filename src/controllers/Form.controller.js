@@ -58,7 +58,27 @@ const GetForm = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, Form, "Store Fetched Succesfully"));
 });
-
+/*
+                                                         
+                                                         
+-----------------       Check Form        -----------------
+                                                        
+                                                         
+*/
+const CheckForm = asynchandler(async (req, res) => {
+  const allForm = req.user._id;
+  try {
+    const form = await Form.findById(allForm);
+    if (form) {
+        // If form is found, return its status
+        return res.json({ status: 'created', formStatus: form.status });
+    } else {
+        return res.json({ status: 'not created' });
+    }
+} catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+}
+});
 /*
                                                          
                                                          
@@ -120,4 +140,4 @@ const DeleteForm = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Form Delete Successfully"));
 });
-export { addForm, GetForm, UpdateForm, DeleteForm, GetAllForm };
+export { addForm, CheckForm,GetForm, UpdateForm, DeleteForm, GetAllForm };
