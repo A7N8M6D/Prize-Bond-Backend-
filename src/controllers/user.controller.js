@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import Jwt from "jsonwebtoken";
 import { json } from "express";
+import { Bond } from "../models/bonds.model.js";
 
 const GenerRefreshAccessToken = async (userID) => {
   try {
@@ -266,13 +267,36 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
 
 
 */
-
 const GetCurrentUser = asynchandler(async (req, res) => {
-  return res
-    .status(200)
-    .json(new ApiResponse(200, req.user, "User Fetched Succesfully"));
-});
+  try {
+    const user = await User.findById(req.user?._id);
 
+    if (!user) {
+      return res.status(404).json(new ApiResponse(404, null, "User not found"));
+    }
+
+    // Fetch bonds associated with the user
+    const bonds = await Bond.find({ user: user._id });
+
+    // Selectively pick the required fields
+    const userResponse = {
+      username: user.username,
+      email: user.email,
+      fullname: user.fullname,
+      userType: user.userType,
+      number: user.number,
+      Location: user.Location,
+      bonds: bonds.map(bond => ({
+        PrizeBondType: bond.PrizeBondType,
+        numberOfBonds: bond.PrizeBondNumber.length
+      }))
+    };
+
+    return res.status(200).json(new ApiResponse(200, userResponse, "User fetched successfully"));
+  } catch (error) {
+    return res.status(500).json(new ApiResponse(500, null, "An error occurred"));
+  }
+});
 export {
   registerUser,
   loginUser,
