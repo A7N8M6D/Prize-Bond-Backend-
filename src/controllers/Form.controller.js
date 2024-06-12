@@ -93,7 +93,8 @@ const GetAllForm = asynchandler(async (req, res) => {
   const allForm = req.user._id;
 
   try {
-      const forms = await Form.find({ user: allForm })
+    
+          const forms = await Form.find()
           .limit(limit * 1)
           .skip((page - 1) * limit)
           .exec();
