@@ -64,7 +64,7 @@ const addStore = asynchandler(async (req, res) => {
                                                         
                                                          
 */
-const GetStore = asynchandler(async (req, res) => {
+const GetPersonalStore = asynchandler(async (req, res) => {
   const allstore = req.user._id;
   console.log("sdsd" + allstore);
   const stores = await Store.find({ user: allstore });
@@ -73,9 +73,37 @@ const GetStore = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, stores, "Store Fetched Succesfully"));
 });
-
 /*
                                                          
+                                                         
+-----------------       Get  Store        -----------------
+                                                        
+                                                         
+*/
+
+
+
+const GetStore = asynchandler(async (req, res) => {
+  const storeId = req.query.id;  // Extract store ID from request parameters
+  console.log("Store ID: " + storeId);
+
+  try {
+    const store = await Store.findById(storeId);
+    if (!store) {
+      return res.status(404).json(new ApiResponse(404, null, "Store Not Found"));
+    }
+    console.log("Fetched Store: ", store);
+
+    return res.status(200).json(new ApiResponse(200, store, "Store Fetched Successfully"));
+  } catch (error) {
+    console.error("Error fetching store: ", error);
+    return res.status(500).json(new ApiResponse(500, null, "Failed to Fetch Store"));
+  }
+});
+
+
+/*
+ 
                                                          
 -----------------       All Store        -----------------
                                                         
