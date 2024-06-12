@@ -119,22 +119,29 @@ const GetAllForm = asynchandler(async (req, res) => {
 */
 
 const UpdateForm = asynchandler(async (req, res) => {
-  const { Form_id} = req.query;
-  const user = req.req.user._id;
+  try {
+    const { Form_id } = req.query;
+    const userId = req.user._id;
 
-  const form = await Form.findById(Form_id);
-  if (!form) {
-    throw new ApiError(400, "Invalid Form");
+    const user = await User.findById(userId);
+    const form = await Form.findById(Form_id);
+
+    if (!form) {
+      throw new ApiError(400, "Invalid Form");
+    }
+
+    form.Status = "true";
+    user.userType = "broker"; // Assuming 'user' has a field called 'role'
+
+    await form.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(new ApiResponse(200, {}, "Broker Good Luck!"));
+  } catch (error) {
+    res.status(500).json(new ApiResponse(500, {}, error.message));
   }
-  form.Status = "true";
-
-  await Form.save({ validateBeforeSave: false });
-  user.userTyoe = "broker";
-
-  await user.save({ validateBeforeSave: false });
-
-  return res.status(200).json(new ApiResponse(200, {}, " Broker Good Luck!"));
 });
+
 /*
                                                          
                                                          
