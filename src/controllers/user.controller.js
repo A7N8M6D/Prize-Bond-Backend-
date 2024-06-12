@@ -38,7 +38,7 @@ const GenerRefreshAccessToken = async (userID) => {
 
 
 */
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = asynchandler(async (req, res) => {
   // Extract data from the request body
   const { fullname, email, username, password, userType, Location, number } = req.body;
   console.log("email", email);
