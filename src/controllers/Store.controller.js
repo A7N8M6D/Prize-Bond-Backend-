@@ -83,48 +83,29 @@ const GetStore = asynchandler(async (req, res) => {
 */
 
 const GetAllStore = asynchandler(async (req, res) => {
-  const { howMany, location } = req.query;
-  const stores = await Store.find({});
-  const numberOfStores = stores.length;
-  // Calculate the end index based on howMany
-  let howMan = parseInt(howMany);
-  let endIndex = howMan + 10;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+  const location = req.query.location;
 
-  // Declare variables to store selected stores
-  let selectedStore, selectedStores;
-
-  if (location.trim() !== "") {
-    // Find the store with the specified location
-    console.log("------------------All stores:----------------------", stores);
-    console.log("how man" + howMan);
-    selectedStore = stores.filter((store) => store.Location === location);
-    if (howMan === 0) {
-      selectedStores = selectedStore.slice(-1, endIndex);
-    } else {
-      selectedStores = selectedStore.slice(howMan, endIndex);
-    }
-    console.log(
-      "----------------Selected stores:1-----------------",
-      selectedStores
-    );
-  } else {
-    // If no location specified, select stores based on howMany and endIndex
-    console.log("------------------All stores:----------------------", stores);
-    if (howMan === 0) {
-      endIndex = endIndex - 1;
-      selectedStores = stores.slice(endIndex);
-    } else {
-      selectedStores = stores.slice(howMan, endIndex);
-    }
-    console.log(
-      "----------------Selected stores:2-----------------",
-      selectedStores
-    );
+  let query = {};
+  if (location) {
+    query.Location = location;
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, selectedStores, "Stores Fetched Successfully"));
+  try {
+    const stores = await Store.find(query).skip(skip).limit(limit).exec();
+    const totalStores = await Store.countDocuments(query);
+    const totalPages = Math.ceil(totalStores / limit);
+
+    res.json({
+      page,
+      totalPages,
+      data: stores,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /*
