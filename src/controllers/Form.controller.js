@@ -119,10 +119,10 @@ const GetAllForm = asynchandler(async (req, res) => {
 */
 
 const UpdateForm = asynchandler(async (req, res) => {
-  const { status, typeUser } = req.body;
+  const { Form_id} = req.query;
   const user = req.req.user._id;
 
-  const form = await Form.findById(store_id);
+  const form = await Form.findById(Form_id);
   if (!form) {
     throw new ApiError(400, "Invalid Form");
   }
@@ -143,7 +143,7 @@ const UpdateForm = asynchandler(async (req, res) => {
                                                          
 */
 const DeleteForm = asynchandler(async (req, res) => {
-  const { Form_id } = req.body;
+  const { Form_id } = req.query;
   const deletedForm = await Form.findByIdAndDelete(Form_id);
 
   // Check if the bond exists
