@@ -58,6 +58,10 @@ const registerUser = asynchandler(async (req, res) => {
   if (number === "") {
     return res.status(400).json({ error: "Number field is required" });
   }
+  
+  if (!Number.isInteger(Number(number))) {
+    return res.status(400).json({ error: "Number must be an integer" });
+  }
 
   // Check if user already exists
   const existedUser = await User.findOne({ $or: [{ username }, { email }] });
