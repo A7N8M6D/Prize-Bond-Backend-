@@ -96,15 +96,16 @@ const GetAllForm = asynchandler(async (req, res) => {
   const { page = 1 } = req.query;
   const limit = 10
   const allForm = req.user._id;
-
+console.log("formmmm",allForm)
   try {
     
           const forms = await Form.find()
+          console.log("forms",forms)
           .limit(limit * 1)
           .skip((page - 1) * limit)
           .exec();
 
-      const count = await Form.countDocuments({ user: allForm });
+      const count = await Form.countDocuments();
 
       return res.status(200).json(new ApiResponse(200, {
           forms,
