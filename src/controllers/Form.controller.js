@@ -100,10 +100,10 @@ console.log("formmmm",allForm)
   try {
     
           const forms = await Form.find()
-          console.log("forms",forms)
           .limit(limit * 1)
           .skip((page - 1) * limit)
           .exec();
+          console.log("forms",forms)
 
       const count = await Form.countDocuments();
 
