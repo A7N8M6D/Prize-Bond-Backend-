@@ -93,7 +93,7 @@ const CheckForm = asynchandler(async (req, res) => {
 */
 
 const GetAllForm = asynchandler(async (req, res) => {
-  const { page = 1 } = req.query;
+  const { page  } = req.query;
   const limit = 10
   const allForm = req.user._id;
 console.log("formmmm",allForm)
