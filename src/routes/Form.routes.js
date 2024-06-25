@@ -6,8 +6,8 @@ import { DeleteForm, CheckForm,GetAllForm, GetForm, UpdateForm, addForm } from "
 const router=Router();
 
 router.route("/add").post(verifyJWT  , addForm);
-router.route("/delete").get(verifyJWT  , DeleteForm);
-router.route("/update").post(verifyJWT  , UpdateForm);
+router.route("/delete").delete(verifyJWT  , DeleteForm);
+router.route("/update").put(verifyJWT  , UpdateForm);
 router.route("/getForm").delete(verifyJWT  , GetForm);
 router.route("/getAllForm").get(verifyJWT  , GetAllForm);
 router.route("/CheckForm").get(verifyJWT  , CheckForm);
