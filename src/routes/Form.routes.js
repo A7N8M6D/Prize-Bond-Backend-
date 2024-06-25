@@ -8,7 +8,7 @@ const router=Router();
 router.route("/add").post(verifyJWT  , addForm);
 router.route("/delete").delete(verifyJWT  , DeleteForm);
 router.route("/update").put(verifyJWT  , UpdateForm);
-router.route("/getForm").delete(verifyJWT  , GetForm);
+router.route("/getForm").get(verifyJWT  , GetForm);
 router.route("/getAllForm").get(verifyJWT  , GetAllForm);
 router.route("/CheckForm").get(verifyJWT  , CheckForm);
 export default router
