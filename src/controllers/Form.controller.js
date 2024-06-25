@@ -93,29 +93,37 @@ const CheckForm = asynchandler(async (req, res) => {
 */
 
 const GetAllForm = asynchandler(async (req, res) => {
-  const { page  } = req.query;
-  const limit = 10
-  const allForm = req.user._id;
-console.log("formmmm",allForm)
   try {
-    
-          const forms = await Form.find()
-          .limit(limit * 1)
-          .skip((page - 1) * limit)
-          .exec();
-          console.log("forms",forms)
+    const { page = 1 } = req.query;  // Default to page 1 if not provided
+    const limit = 10;
+    const userId = req.user._id;
 
-      const count = await Form.countDocuments();
+    console.log("User ID:", userId);
 
-      return res.status(200).json(new ApiResponse(200, {
-          forms,
-          totalPages: Math.ceil(count / limit),
-          currentPage: page
-      }, "Forms Fetched Successfully"));
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json(new ApiResponse(400, null, "Invalid page number"));
+    }
+
+    const forms = await Form.find()
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+
+    console.log("Forms:", forms);
+
+    const count = await Form.countDocuments();
+
+    return res.status(200).json(new ApiResponse(200, {
+      forms,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page, 10)
+    }, "Forms Fetched Successfully"));
   } catch (error) {
-      return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+    console.error("Error fetching forms:", error);
+    return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
   }
 });
+
 
 /*
                                                          
