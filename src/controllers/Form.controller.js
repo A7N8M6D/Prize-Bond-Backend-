@@ -66,19 +66,24 @@ const GetForm = asynchandler(async (req, res) => {
                                                          
 */
 const CheckForm = asynchandler(async (req, res) => {
-  const allForm = req.user._id;
+  const allForm = req.user._id;  // Assuming req.user._id holds the user's ID
+  console.log("User Id:", allForm); // Logging the user ID for debugging
+
   try {
     const form = await Form.find({ user: allForm });
-    if (form) {
+
+    if (form.length > 0) {
         // If form is found, return its status
-        return res.json({ status: 'created', formStatus: form.status });
+        return res.json({ status: 'created', formStatus: form[0].status }); // Assuming form[0] accesses the first form found
     } else {
         return res.json({ status: 'not created' });
     }
-} catch (error) {
+  } catch (error) {
+    console.error("Error:", error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Internal Server Error' });
-}
+  }
 });
+
 /*
                                                          
                                                          
