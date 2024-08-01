@@ -66,21 +66,21 @@ const GetForm = asynchandler(async (req, res) => {
                                                          
 */
 const CheckForm = asynchandler(async (req, res) => {
-  const allForm = req.user._id;  // Assuming req.user._id holds the user's ID
+  const allForm = req.user._id; // Assuming req.user._id holds the user's ID
   console.log("User Id:", allForm); // Logging the user ID for debugging
 
   try {
     const form = await Form.find({ user: allForm });
 
     if (form.length > 0) {
-        // If form is found, return its status
-        return res.json({ status: 'created', formStatus: form[0].status }); // Assuming form[0] accesses the first form found
+      // If form is found, return its status
+      return res.json({ status: "created", formStatus: form[0].status }); // Assuming form[0] accesses the first form found
     } else {
-        return res.json({ status: 'not created' });
+      return res.json({ status: "not created" });
     }
   } catch (error) {
     console.error("Error:", error); // Log the error for debugging purposes
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -94,14 +94,16 @@ const CheckForm = asynchandler(async (req, res) => {
 
 const GetAllForm = asynchandler(async (req, res) => {
   try {
-    const { page = 1 } = req.query;  // Default to page 1 if not provided
+    const { page = 1 } = req.query; // Default to page 1 if not provided
     const limit = 10;
     const userId = req.user._id;
 
     console.log("User ID:", userId);
 
     if (isNaN(page) || page < 1) {
-      return res.status(400).json(new ApiResponse(400, null, "Invalid page number"));
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, "Invalid page number"));
     }
 
     const forms = await Form.find()
@@ -113,17 +115,24 @@ const GetAllForm = asynchandler(async (req, res) => {
 
     const count = await Form.countDocuments();
 
-    return res.status(200).json(new ApiResponse(200, {
-      forms,
-      totalPages: Math.ceil(count / limit),
-      currentPage: parseInt(page, 10)
-    }, "Forms Fetched Successfully"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          forms,
+          totalPages: Math.ceil(count / limit),
+          currentPage: parseInt(page, 10),
+        },
+        "Forms Fetched Successfully"
+      )
+    );
   } catch (error) {
     console.error("Error fetching forms:", error);
-    return res.status(500).json(new ApiResponse(500, null, "Internal Server Error"));
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Internal Server Error"));
   }
 });
-
 
 /*
                                                          
@@ -140,16 +149,17 @@ const UpdateForm = asynchandler(async (req, res) => {
 
     const user = await User.findById(userId);
     const form = await Form.findById(Form_id);
+    console.log(form.user)
 
     if (!form) {
       throw new ApiError(400, "Invalid Form");
     }
 
-    form.Status = "true";
-    user.userType = "broker"; // Assuming 'user' has a field called 'role'
+    // form.Status = "true";
+    // user.userType = "broker"; // Assuming 'user' has a field called 'role'
 
-    await form.save({ validateBeforeSave: false });
-    await user.save({ validateBeforeSave: false });
+    // await form.save({ validateBeforeSave: false });
+    // await user.save({ validateBeforeSave: false });
 
     return res.status(200).json(new ApiResponse(200, {}, "Broker Good Luck!"));
   } catch (error) {
@@ -177,4 +187,4 @@ const DeleteForm = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Form Delete Successfully"));
 });
-export { addForm, CheckForm,GetForm, UpdateForm, DeleteForm, GetAllForm };
+export { addForm, CheckForm, GetForm, UpdateForm, DeleteForm, GetAllForm };

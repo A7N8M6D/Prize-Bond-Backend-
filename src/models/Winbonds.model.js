@@ -21,9 +21,7 @@ const bondsWinschema = new Schema(
       type:Schema.Types.ObjectId,
       ref:"List"
     },
-    Month:{
-      type
-    }, Month: {
+     Month: {
       type: Number,
       required: true,
     },

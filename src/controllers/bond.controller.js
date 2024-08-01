@@ -1,4 +1,6 @@
+import { BondWin } from "../models/Winbonds.model.js";
 import { Bond } from "../models/bonds.model.js";
+import { List } from "../models/list.model.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -180,4 +182,71 @@ type=parseInt ( type)
   }
 
 });
-export { addNewBond, GetAllBond, UpdateBond, DeleteBond };
+
+/*
+                                                         
+                                                         
+-----------------       Bond Check       -----------------
+                                                        
+                                                         
+*/
+const checkBonds = asynchandler(async (req, res) => {
+  const { listId } = req.params;
+
+  // Fetch the list details
+  const list = await List.findById(listId);
+  if (!list) {
+    return res.status(404).json(new ApiError(404, 'List not found'));
+  }
+
+  // Fetch all bonds
+  const bonds = await Bond.find().populate('user');
+
+  // Extract winning numbers from the list
+  const winningNumbers = [
+    { type: 'First', numbers: list.FirstWin, amount: list.FirstPrize },
+    { type: 'Second', numbers: list.SecondWin, amount: list.SecondPrize },
+    { type: 'Third', numbers: list.ThirdWin, amount: list.ThirdPrize },
+  ];
+
+  // Check and save the winning bonds
+  for (const bond of bonds) {
+    for (const win of winningNumbers) {
+      const matchedNumbers = bond.PrizeBondNumber.filter((number) =>
+        win.numbers.includes(number)
+      );
+
+      if (matchedNumbers.length > 0) {
+        await BondWin.create({
+          PrizeBondNumber: matchedNumbers,
+          user: bond.user,
+          list: list._id,
+          Month: list.Month,
+          Year: list.Year,
+          PrizeBondType: bond.PrizeBondType,
+          PrizeType: win.type,
+          PrizeAmount: win.amount,
+        });
+      }
+    }
+  }
+
+  return res.status(200).json(new ApiResponse(200, null, 'Bond check completed'));
+});
+
+// Schedule the bond check to run five minutes after list upload
+const scheduleBondCheck = (listId) => {
+  setTimeout(async () => {
+    const req = { params: { listId } };
+    const res = {
+      status: (statusCode) => ({
+        json: (response) => console.log(`Status: ${statusCode}, Response: ${JSON.stringify(response)}`),
+      }),
+    };
+    await checkBonds(req, res);
+  }, 5 * 60 * 1000); // 5 minutes in milliseconds
+};
+
+
+
+export { addNewBond,scheduleBondCheck, GetAllBond, UpdateBond, DeleteBond };
