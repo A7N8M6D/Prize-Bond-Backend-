@@ -77,8 +77,8 @@ const CheckForm = asynchandler(async (req, res) => {
     console.log("check 2", form);
 
     if (user.userType === "broker") {
-      const store = await Store.find({ user: allForm });
-      if (store.length > 0) {
+      const store = await Store.findOne({ user: allForm });
+      if (store) {
         return res.json({ status: "store" });
       } else {
         return res.json({ status: "noStore" });

@@ -174,4 +174,4 @@ const DeleteStore = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Store Delete Successfully"));
 });
-export { addStore, GetStore, UpdateStore, DeleteStore, GetAllStore };
+export { addStore, GetStore, UpdateStore, DeleteStore, GetAllStore ,GetPersonalStore};
