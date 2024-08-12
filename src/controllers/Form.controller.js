@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynchandler } from "../utils/asynchandler.js";
-import { User } from "../models/user.model.js";
+// import { User } from "../models/user.model.js";
 /*
  
  
@@ -71,7 +71,7 @@ const CheckForm = asynchandler(async (req, res) => {
 
   try {
     const form = await Form.find({ user: allForm });
-    const userr = await user.find({ _id: allForm });
+    const user = await User.find({ _id: allForm });
     console.log("check 0" , form)
     if (form.length > 0) {
       // If form is found, return its status
