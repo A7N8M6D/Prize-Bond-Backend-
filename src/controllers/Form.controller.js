@@ -172,13 +172,13 @@ const UpdateForm = asynchandler(async (req, res) => {
     // Save the updated form and user
     await form.save({ validateBeforeSave: false });
     await user.save({ validateBeforeSave: false });
+    const deletedForm = await Form.findByIdAndDelete(Form_id);
+    return res.status(200).json(new ApiResponse(200, {}, "Broker Good Luck!" ,"Deleted Form",deletedForm));
 
-    return res.status(200).json(new ApiResponse(200, {}, "Broker Good Luck!"));
   } catch (error) {
     res.status(500).json(new ApiResponse(500, {}, error.message));
   }
 });
-
 
 /*
                                                          
