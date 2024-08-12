@@ -71,6 +71,7 @@ const CheckForm = asynchandler(async (req, res) => {
 
   try {
     const form = await Form.find({ user: allForm });
+    const user = await user.find({ _id: allForm });
     console.log("check 0" , form)
     if (form.length > 0) {
       // If form is found, return its status
