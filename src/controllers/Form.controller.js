@@ -76,6 +76,7 @@ const CheckForm = asynchandler(async (req, res) => {
       // If form is found, return its status
       return res.json({ status: "created", formStatus: form[0].status }); // Assuming form[0] accesses the first form found
     } else {
+      console.log("USer Type 1122", form.userType)
       return res.json({ status: "not created" ,usertyoe:form.userType});
     }
   } catch (error) {
