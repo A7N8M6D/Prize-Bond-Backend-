@@ -72,7 +72,7 @@ const CheckForm = asynchandler(async (req, res) => {
   try {
     const form = await Form.find({ user: allForm });
     const user = await User.find({ _id: allForm });
-    console.log("check 0" , form)
+    console.log("check 0" , user)
     if (form.length > 0) {
       // If form is found, return its status
       return res.json({ status: "created", formStatus: form[0].status }); // Assuming form[0] accesses the first form found
