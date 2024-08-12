@@ -76,7 +76,7 @@ const CheckForm = asynchandler(async (req, res) => {
     console.log("check 1", user.userType);
     console.log("check 2", form);
 
-    if (user.userType === "broker") {
+    if (user.userType =="broker") {
       return res.json({ status: "Broker" });
     } else {
       if (form.length > 0) {
