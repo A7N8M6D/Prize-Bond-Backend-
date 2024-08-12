@@ -22,12 +22,12 @@ const addStore = asynchandler(async (req, res) => {
   if ([Description].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "Description field is required");
   }
-
+console.log("Data" ,Description, location, number, EMAil, Name)
   // Use the provided values or fall back to the user's data
-  const locatt = location === "true" ? useR.Location : location;
-  const num = number === "true" ? useR.number : number;
-  const eml = EMAil === "true" ? useR.email : EMAil;
-  const namm = Name === "true" ? useR.fullname : Name;
+  const locatt = location === "true" ?  location:useR.Location ;
+  const num = number === "true" ?  number: useR.number;
+  const eml = EMAil === "true" ? EMAil: useR.email ;
+  const namm = Name === "true" ?  Name:  useR.fullname;
 
   // Check if the store already exists (uncomment and adjust this as needed)
   // const existedStore = await Store.findOne({ User: req.user?._id });
