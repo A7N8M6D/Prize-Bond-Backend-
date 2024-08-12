@@ -71,20 +71,16 @@ const CheckForm = asynchandler(async (req, res) => {
 
   try {
     const form = await Form.find({ user: allForm });
-    const user = await User.findOne({ _id: allForm }); // findOne instead of find
+    const user = await User.findOne({ _id: allForm });
     console.log("check 0", user);
     console.log("check 1", user.userType);
     console.log("check 2", form);
 
-    if (user.userType =="broker") {
-      const store= Store.find({ user: allForm });
-      if(store)
-      {
+    if (user.userType === "broker") {
+      const store = await Store.find({ user: allForm });
+      if (store.length > 0) {
         return res.json({ status: "store" });
-
-      }
-      else
-      {
+      } else {
         return res.json({ status: "noStore" });
       }
     } else {
@@ -92,7 +88,7 @@ const CheckForm = asynchandler(async (req, res) => {
         // If form is found, return its status
         return res.json({ status: "created", formStatus: form[0].status });
       } else {
-        console.log("User Type 1122", user.userType); // Corrected to user.userType
+        console.log("User Type 1122", user.userType);
         return res.json({ status: "not created", userType: user.userType });
       }
     }
@@ -101,6 +97,7 @@ const CheckForm = asynchandler(async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 /*
