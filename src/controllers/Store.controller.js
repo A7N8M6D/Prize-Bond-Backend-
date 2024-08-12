@@ -24,10 +24,10 @@ const addStore = asynchandler(async (req, res) => {
   }
 console.log("Data" ,Description, location, number, EMAil, Name)
   // Use the provided values or fall back to the user's data
-  const locatt = location === "true" ?  location:useR.Location ;
-  const num = number === "true" ?  number: useR.number;
-  const eml = EMAil === "true" ? EMAil: useR.email ;
-  const namm = Name === "true" ?  Name:  useR.fullname;
+  const locatt = location?  location:useR.Location ;
+  const num = number?  number: useR.number;
+  const eml = EMAil? EMAil: useR.email ;
+  const namm = Name?  Name:  useR.fullname;
 
   // Check if the store already exists (uncomment and adjust this as needed)
   // const existedStore = await Store.findOne({ User: req.user?._id });
