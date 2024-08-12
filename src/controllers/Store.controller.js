@@ -17,29 +17,22 @@ const addStore = asynchandler(async (req, res) => {
   const { Description, location, number, EMAil, Name } = req.body;
 
   const useR = await User.findById(req.user?._id);
-  console.log("User in mobile",useR)
+  console.log("User in mobile", useR);
+
   if ([Description].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "Description field are required");
+    throw new ApiError(400, "Description field is required");
   }
-  let locatt, num, eml, namm;
-  if (location == "true") {
-    locatt = useR.Location;
-  }
-  if (number == "true") {
-    num = useR.number;
-  }
-  if (EMAil == "true") {
-    eml = useR.email;
-  }
-  if (Name == "true") {
-    namm = useR.fullname;
-  }
-  // const existedStore = await Store.findById({
-  //   req.user?._id
-  // });
-  // console.log("user of bond" + useR._id);
+
+  // Use the provided values or fall back to the user's data
+  const locatt = location === "true" ? useR.Location : location;
+  const num = number === "true" ? useR.number : number;
+  const eml = EMAil === "true" ? useR.email : EMAil;
+  const namm = Name === "true" ? useR.fullname : Name;
+
+  // Check if the store already exists (uncomment and adjust this as needed)
+  // const existedStore = await Store.findOne({ User: req.user?._id });
   // if (existedStore) {
-  //   throw new ApiError(409, "Store already Exist");
+  //   throw new ApiError(409, "Store already exists");
   // }
 
   const createdStore = await Store.create({
@@ -50,12 +43,14 @@ const addStore = asynchandler(async (req, res) => {
     Name: namm,
     User: req.user?._id,
   });
+
   if (!createdStore) {
-    throw new ApiError(500, "Store not Save Something went wrong");
+    throw new ApiError(500, "Store not saved. Something went wrong.");
   }
+
   return res
     .status(201)
-    .json(new ApiResponse(200, createdStore, "Store Creted Successfully"));
+    .json(new ApiResponse(200, createdStore, "Store created successfully"));
 });
 
 /*
