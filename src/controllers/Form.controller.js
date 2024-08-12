@@ -71,30 +71,28 @@ const CheckForm = asynchandler(async (req, res) => {
 
   try {
     const form = await Form.find({ user: allForm });
-    const user = await User.find({ _id: allForm });
-    console.log("check 0" , user)
-    console.log("check 1" , user.userType)
-    console.log("check 2" , form)
-    if(user.userType=="broker")
-    {
-      return res.json({ status: "Broker" });
-    }
-    else{
+    const user = await User.findOne({ _id: allForm }); // findOne instead of find
+    console.log("check 0", user);
+    console.log("check 1", user.userType);
+    console.log("check 2", form);
 
-    
-    if (form.length > 0) {
-      // If form is found, return its status
-      return res.json({ status: "created", formStatus: form[0].status }); // Assuming form[0] accesses the first form found
+    if (user.userType === "broker") {
+      return res.json({ status: "Broker" });
     } else {
-      console.log("USer Type 1122", form.userType)
-      return res.json({ status: "not created" ,usertyoe:form.userType});
+      if (form.length > 0) {
+        // If form is found, return its status
+        return res.json({ status: "created", formStatus: form[0].status });
+      } else {
+        console.log("User Type 1122", user.userType); // Corrected to user.userType
+        return res.json({ status: "not created", userType: user.userType });
+      }
     }
-  }
   } catch (error) {
     console.error("Error:", error); // Log the error for debugging purposes
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 /*
                                                          
