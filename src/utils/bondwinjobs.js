@@ -13,6 +13,7 @@ const bondWinQueue = new Queue('bondWinQueue', {
 export const addBondWinJob = async (listId) => {
   console.log("List 0",listId )
   await bondWinQueue.add('processBondWins', { listId });
+  return res.status(200).json({ message: 'Job added to the queue, processing in background.' });
   console.log("List 22",listId )
 };
 
