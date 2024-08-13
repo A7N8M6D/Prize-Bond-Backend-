@@ -11,7 +11,7 @@ const bondWinQueue = new Bull('bondWinQueue', 'redis://127.0.0.1:6379'); // Adju
 export const addBondWinJob = async (req, res) => {
   try {
     const { listId } = req.body;
-
+console.log("Before queued",listId)
     // Add job to queue (this should be quick)
     await bondWinQueue.add('processBondWins',  listId );
 
