@@ -13,7 +13,7 @@ export const addBondWinJob = async (req, res) => {
     const { listId } = req.body;
 
     // Add job to queue (this should be quick)
-    await bondWinQueue.add('processBondWins', { listId });
+    await bondWinQueue.add('processBondWins',  listId );
 
     // Immediately return a response to avoid timeout
     return res.status(200).json({ message: 'Job added to the queue and will be processed in the background.' });
