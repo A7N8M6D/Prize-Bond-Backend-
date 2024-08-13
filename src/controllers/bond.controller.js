@@ -11,61 +11,88 @@ import { asynchandler } from "../utils/asynchandler.js";
 -----------------        Add Bond        -----------------
 
 */
-// import asyncHandler from "express-async-handler";
 
-
-// Add New Bond and Check for Winning Bond
 const addNewBond = asynchandler(async (req, res) => {
   const { PrizeBondTyp, PrizeBondNumbe } = req.body;
 
   const useR = await User.findById(req.user?._id);
+  if (!useR) {
+    throw new ApiError(404, "User not found");
+  }
 
+  console.log("Prize Bond", PrizeBondNumbe);
   const PrizeBondType = JSON.parse(PrizeBondTyp);
   let PrizeBondNumber = PrizeBondNumbe;
 
-  if (PrizeBondType === null || PrizeBondNumber == null) {
+  if (!PrizeBondType || !PrizeBondNumber) {
     throw new ApiError(400, "Prize bond Number and Type are required");
   }
 
-  const existedUser = await User.findOne({
-    PrizeBondNumber,
-  });
-
   const BondsAlreadyCreated = await Bond.findOne({
     user: useR._id,
-    PrizeBondType: PrizeBondType,
+    PrizeBondType,
   });
 
   if (BondsAlreadyCreated) {
-    BondsAlreadyCreated.PrizeBondNumber =
-      BondsAlreadyCreated.PrizeBondNumber.concat(PrizeBondNumber);
-    await BondsAlreadyCreated.save();
-    checkForWinningBond(BondsAlreadyCreated, PrizeBondNumber);
-    return res
-      .status(201)
-      .json(
-        new ApiResponse(200, BondsAlreadyCreated, "Bond Save Successfully")
-      );
-  } else {
-    if (existedUser) {
-      throw new ApiError(409, "Prize Bond Number already Exist");
+    if (BondsAlreadyCreated.PrizeBondNumber.includes(PrizeBondNumber)) {
+      throw new ApiError(409, "Prize Bond Number already exists");
     }
 
-    const createdBond = await Bond.create({
+    BondsAlreadyCreated.PrizeBondNumber.push(PrizeBondNumber);
+    await BondsAlreadyCreated.save();
+  } else {
+    const createdbond = await Bond.create({
       PrizeBondType,
-      PrizeBondNumber,
+      PrizeBondNumber: [PrizeBondNumber],
       user: useR._id,
     });
 
-    if (!createdBond) {
-      throw new ApiError(500, "Bond not Save Something went wrong");
+    if (!createdbond) {
+      throw new ApiError(500, "Bond not saved, something went wrong");
+    }
+  }
+
+  // Check if the bond number exists in the List model
+  const matchingList = await List.findOne({
+    $or: [
+      { FirstWin: PrizeBondNumber },
+      { SecondWin: PrizeBondNumber },
+      { ThirdWin: PrizeBondNumber },
+    ],
+  });
+
+  if (matchingList) {
+    const winPosition = [];
+    if (matchingList.FirstWin.includes(PrizeBondNumber)) {
+      winPosition.push("First");
+    }
+    if (matchingList.SecondWin.includes(PrizeBondNumber)) {
+      winPosition.push("Second");
+    }
+    if (matchingList.ThirdWin.includes(PrizeBondNumber)) {
+      winPosition.push("Third");
     }
 
-    checkForWinningBond(createdBond, PrizeBondNumber);
-    return res
-      .status(201)
-      .json(new ApiResponse(200, createdBond, "Bond Save Successfully"));
+    const bondWin = await BondWin.create({
+      PrizeBondType,
+      PrizeBondNumber,
+      user: useR._id,
+      bond: BondsAlreadyCreated?._id,
+      List: matchingList._id,
+      Month: matchingList.Month,
+      Year: matchingList.Year,
+      AmountWin: matchingList.PrizeBondAmount,
+      WinPosition: winPosition,
+    });
+
+    if (!bondWin) {
+      throw new ApiError(500, "Failed to save winning bond");
+    }
   }
+
+  return res
+    .status(201)
+    .json(new ApiResponse(200, { message: "Bond added successfully" }));
 });
 
 /*
@@ -152,8 +179,8 @@ const UpdateBond = asynchandler(async (req, res) => {
 const DeleteBond = asynchandler(async (req, res) => {
   let { number, type } = req.query;
   const user = req.user._id;
-  console.log("user conatian bond", user);
-  type = parseInt(type);
+  console.log("user conatian bond",user)
+type=parseInt ( type)
   try {
     // Find the bond by user and type, and remove the specific prize bond number from the array
     const updatedBond = await Bond.findOneAndUpdate(
@@ -163,19 +190,15 @@ const DeleteBond = asynchandler(async (req, res) => {
     );
 
     if (updatedBond) {
-      res
-        .status(200)
-        .json({
-          message: "Prize bond number deleted successfully",
-          updatedBond,
-        });
+      res.status(200).json({ message: 'Prize bond number deleted successfully', updatedBond });
     } else {
-      res.status(404).json({ message: "Bond not found" });
+      res.status(404).json({ message: 'Bond not found' });
     }
   } catch (error) {
-    console.error("Error updating bond:", error);
-    res.status(500).json({ message: "An error occurred", error });
+    console.error('Error updating bond:', error);
+    res.status(500).json({ message: 'An error occurred', error });
   }
+
 });
 
 /*
@@ -191,17 +214,17 @@ const checkBonds = asynchandler(async (req, res) => {
   // Fetch the list details
   const list = await List.findById(listId);
   if (!list) {
-    return res.status(404).json(new ApiError(404, "List not found"));
+    return res.status(404).json(new ApiError(404, 'List not found'));
   }
 
   // Fetch all bonds
-  const bonds = await Bond.find().populate("user");
+  const bonds = await Bond.find().populate('user');
 
   // Extract winning numbers from the list
   const winningNumbers = [
-    { type: "First", numbers: list.FirstWin, amount: list.FirstPrize },
-    { type: "Second", numbers: list.SecondWin, amount: list.SecondPrize },
-    { type: "Third", numbers: list.ThirdWin, amount: list.ThirdPrize },
+    { type: 'First', numbers: list.FirstWin, amount: list.FirstPrize },
+    { type: 'Second', numbers: list.SecondWin, amount: list.SecondPrize },
+    { type: 'Third', numbers: list.ThirdWin, amount: list.ThirdPrize },
   ];
 
   // Check and save the winning bonds
@@ -226,79 +249,22 @@ const checkBonds = asynchandler(async (req, res) => {
     }
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, null, "Bond check completed"));
+  return res.status(200).json(new ApiResponse(200, null, 'Bond check completed'));
 });
 
-/*
-                                                         
-                                                         
------------------       Schedule Bond Check       -----------------
-                                                        
-                                                         
-*/
+// Schedule the bond check to run five minutes after list upload
 const scheduleBondCheck = (listId) => {
-  setTimeout(
-    async () => {
-      const req = { params: { listId } };
-      const res = {
-        status: (statusCode) => ({
-          json: (response) =>
-            console.log(
-              `Status: ${statusCode}, Response: ${JSON.stringify(response)}`
-            ),
-        }),
-      };
-      await checkBonds(req, res);
-    },
-    5 * 60 * 1000
-  ); // 5 minutes in milliseconds
-};
-/*
-                                                         
-                                                         
------------------                          Check For Winning Bond       -----------------
-                                                        
-                                                         
-*/
-
-const checkForWinningBond = async (bond, PrizeBondNumber) => {
-  const lists = await List.find({
-    PrizeBondAmount: bond.PrizeBondType, // Assuming PrizeBondAmount is used as the type identifier
-  });
-
-  lists.forEach(async (list) => {
-    let winPosition = [];
-
-    if (list.FirstWin.includes(PrizeBondNumber)) {
-      winPosition.push("First");
-    }
-    if (list.SecondWin.includes(PrizeBondNumber)) {
-      winPosition.push("Second");
-    }
-    if (list.ThirdWin.includes(PrizeBondNumber)) {
-      winPosition.push("Third");
-    }
-
-    if (winPosition.length > 0) {
-      await BondWin.create({
-        PrizeBondType: bond.PrizeBondType,
-        PrizeBondNumber: PrizeBondNumber,
-        user: bond.user,
-        bond: bond._id,
-        List: list._id,
-        Month: list.Month,
-        Year: list.Year,
-        AmountWin: winPosition.includes("First")
-          ? list.FirstPrize
-          : winPosition.includes("Second")
-            ? list.SecondPrize
-            : list.ThirdPrize,
-        WinPosition: winPosition,
-      });
-    }
-  });
+  setTimeout(async () => {
+    const req = { params: { listId } };
+    const res = {
+      status: (statusCode) => ({
+        json: (response) => console.log(`Status: ${statusCode}, Response: ${JSON.stringify(response)}`),
+      }),
+    };
+    await checkBonds(req, res);
+  }, 5 * 60 * 1000); // 5 minutes in milliseconds
 };
 
-export { addNewBond, scheduleBondCheck, GetAllBond, UpdateBond, DeleteBond };
+
+
+export { addNewBond,scheduleBondCheck, GetAllBond, UpdateBond, DeleteBond };
