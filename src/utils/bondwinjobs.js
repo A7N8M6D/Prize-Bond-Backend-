@@ -17,7 +17,7 @@ console.log("Before queued",listId)
 
     console.log("after queued",listId)
     // Immediately return a response to avoid timeout
-    return res.status(200).json({ message: 'Job added to the queue and will be processed in the background.' });
+    return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
     console.error('Error adding job to queue:', error);
     return  {message: 'Failed to add job to the queue'} ;
