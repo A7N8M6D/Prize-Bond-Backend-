@@ -18,11 +18,13 @@ import { asynchandler } from "../utils/asynchandler.js";
 
 const GetAllWinBond = asynchandler(async (req, res) => {
   
-    const { BondType } = req.query;
+    // const { BondType } = req.query;
   console.log("first");
   const allbonds = req.user._id;
+  console.log("user ID", allbonds)
   console.log("Second");
   const bonds = await BondWin.findById(allbonds);
+  console.log("all bond",bonds)
   console.log("bonds", bonds);
   return res
     .status(200)
