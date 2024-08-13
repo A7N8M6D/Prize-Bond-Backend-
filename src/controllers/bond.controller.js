@@ -22,7 +22,9 @@ const addNewBond = asynchandler(async (req, res) => {
 
   console.log("Prize Bond", PrizeBondNumbe);
   const PrizeBondType = JSON.parse(PrizeBondTyp);
-  let PrizeBondNumber = PrizeBondNumbe;
+  
+  // Ensure PrizeBondNumbe is a string
+  let PrizeBondNumber = PrizeBondNumbe.toString().trim();
 
   if (!PrizeBondType || !PrizeBondNumber) {
     throw new ApiError(400, "Prize bond Number and Type are required");
