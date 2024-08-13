@@ -8,7 +8,6 @@ import fs from "fs/promises"; // Import the promises API from the fs module
 import { scheduleBondCheck } from "./bond.controller.js";
 // import fs from "fs";
 
-
 /*
  
  
@@ -196,10 +195,9 @@ console.log("File")
     }
 // Schedule bond check after five minutes
 
-     res
+    return res
       .status(201)
       .json(new ApiResponse(200, list, "List Saved Successfully"));
-      bondCheckQueue.add({ listId: list._id });
   } catch (err) {
     console.error("Error reading file:", err);
     return res.status(500).send("Error reading file");
