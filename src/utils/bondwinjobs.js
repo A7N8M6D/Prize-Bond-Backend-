@@ -8,7 +8,7 @@ import { Bond } from "../models/bonds.model.js";
 
 const bondWinQueue = new Bull('bondWinQueue', 'redis://127.0.0.1:6379'); // Adjust Redis connection as needed
 
-export const addBondWinJob = async (listId,res) => {
+export const addBondWinJob = async (listId) => {
   try {
     
 console.log("Before queued",listId)
