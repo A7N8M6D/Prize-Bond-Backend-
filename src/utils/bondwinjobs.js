@@ -18,18 +18,19 @@ export const addBondWinJob = async (listId) => {
 // Job processor
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
-
+  
   try {
+    console.log("1", "Job started")
     const list = await List.findById(listId).exec();
+    console.log("2", "Job started")
     if (!list) {
       throw new Error('List not found');
     }
-
+    console.log("3", "Job started")
     // Set the chunk size for processing bonds
     const bondChunkSize = 100;
     let skip = 0;
     let bonds;
-    console.log("1", "Job started")
     // Process bonds in chunks
     do {
       bonds = await Bond.find().skip(skip).limit(bondChunkSize).exec();
