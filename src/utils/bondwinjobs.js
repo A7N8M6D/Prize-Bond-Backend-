@@ -13,7 +13,7 @@ export const addBondWinJob = async (listId) => {
     
 console.log("Before queued",listId)
     // Add job to queue (this should be quick)
-    await bondWinQueue.add('processBondWins', { listId }, { timeout: 30000 }); // Set timeout to 30 seconds
+     bondWinQueue.add('processBondWins', { listId }); // Set timeout to 30 seconds
 
     console.log("after queued",listId)
     // Immediately return a response to avoid timeout
