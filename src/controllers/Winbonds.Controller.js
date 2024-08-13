@@ -17,19 +17,30 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 
 const GetAllWinBond = asynchandler(async (req, res) => {
+    try {
+      const userId = req.user._id;
+      console.log("User ID:", userId);
   
-    // const { BondType } = req.query;
-  console.log("first");
-  const allbonds = req.user._id;
-  console.log("user ID", allbonds)
-  console.log("Second");
-  const bonds = await BondWin.findById(allbonds);
-  console.log("all bond",bonds)
-  console.log("bonds", bonds);
-  return res
-    .status(200)
-    .json(new ApiResponse(200, bonds, "User Fetched Succesfully"));
-});
+      // Find all winning bonds for the user
+      const bonds = await BondWin.find({ user: userId });
+  
+      if (!bonds || bonds.length === 0) {
+        return res.status(404).json(new ApiResponse(404, [], "No winning bonds found for the user"));
+      }
+  
+      console.log("Winning Bonds:", bonds);
+  
+      return res
+        .status(200)
+        .json(new ApiResponse(200, bonds, "Winning bonds fetched successfully"));
+    } catch (error) {
+      console.error("Error fetching winning bonds:", error);
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, "An error occurred while fetching winning bonds"));
+    }
+  });
+  
 
 /*
                                                          
