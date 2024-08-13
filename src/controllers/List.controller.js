@@ -196,6 +196,7 @@ console.log("File")
         );
     }
     try {
+      console.log("Add Bond Job Function")
       await addBondWinJob(list._id);
     } catch (error) {
       console.error("Error scheduling bond win job:", error);
