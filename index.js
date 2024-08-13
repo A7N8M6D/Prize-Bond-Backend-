@@ -1,6 +1,15 @@
 import connectDB from "./src/db/index.js";
 import dotenv from 'dotenv';
 import { app } from "./src/app.js";
+// import { bondCheckQueue } from './path-to-your-queue-file';
+
+// bondCheckQueue.on('completed', (job) => {
+//   console.log(`Bond check completed for list ${job.data.listId}`);
+// });
+
+// bondCheckQueue.on('failed', (job, err) => {
+//   console.error(`Bond check failed for list ${job.data.listId}: ${err.message}`);
+// });
 
 // Load environment variables from the .env file
 dotenv.config({
@@ -21,6 +30,9 @@ connectDB().then(()=>{
     console.log("Mongo DB connection Failed", err)
 });
 
+
+
+
 /*
 ;(
    async ()=>{
@@ -34,3 +46,4 @@ connectDB().then(()=>{
     }
 )();
 */
+
