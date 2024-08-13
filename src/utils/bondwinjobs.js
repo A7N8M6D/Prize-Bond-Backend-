@@ -5,21 +5,14 @@ import { Bond } from "../models/bonds.model.js";
 
 const bondWinQueue = new Bull('bondWinQueue', 'redis://127.0.0.1:6379'); // Adjust Redis connection as needed
 
-// Listen for job events
-bondWinQueue.on('completed', (job, result) => {
-    console.log(`Job ${job.id} completed with result: ${result}`);
-});
 
-bondWinQueue.on('failed', (job, err) => {
-    console.error(`Job ${job.id} failed with error: ${err.message}`);
-});
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
     
     // Add job to queue (this should be quick)
-    bondWinQueue.add('processBondWins', { listId }); // Set timeout to 30 seconds
+    r // Set timeout to 30 seconds
 
     console.log("after queued", listId);
     // Immediately return a response to avoid timeout
@@ -93,4 +86,12 @@ bondWinQueue.process('processBondWins', async (job) => {
   } catch (error) {
     console.error('Error processing bond wins:', error);
   }
+});
+// Listen for job events
+bondWinQueue.on('completed', (job, result) => {
+  console.log(`Job ${job.id} completed with result: ${result}`);
+});
+
+bondWinQueue.on('failed', (job, err) => {
+  console.error(`Job ${job.id} failed with error: ${err.message}`);
 });
