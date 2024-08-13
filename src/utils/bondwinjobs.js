@@ -13,25 +13,23 @@ const bondWinQueue = new Queue('bondWinQueue', {
 export const addBondWinJob = async (listId) => {
   console.log("List 0",listId )
   await bondWinQueue.add('processBondWins', { listId });
+  console.log("List 22",listId )
 };
 
 // Job processor
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
-  
+
   try {
-    console.log("1", "Job started")
     const list = await List.findById(listId).exec();
-    console.log("2", "Job started")
     if (!list) {
       throw new Error('List not found');
     }
-    console.log("3", "Job started")
-    // Set the chunk size for processing bonds
-    const bondChunkSize = 100;
+
+    const bondChunkSize = 10; // Small chunk size
     let skip = 0;
     let bonds;
-    // Process bonds in chunks
+
     do {
       bonds = await Bond.find().skip(skip).limit(bondChunkSize).exec();
       skip += bondChunkSize;
@@ -68,7 +66,12 @@ bondWinQueue.process('processBondWins', async (job) => {
 
       await Promise.all(bondWinPromises);
 
-    } while (bonds.length > 0); // Continue until all bonds are processed
+      // Trigger another job for the next batch
+      if (bonds.length === bondChunkSize) {
+        bondWinQueue.add('processBondWins', { listId, skip });
+      }
+
+    } while (bonds.length > 0);
 
   } catch (error) {
     console.error('Error processing bond wins:', error);
