@@ -11,6 +11,7 @@ const bondWinQueue = new Queue('bondWinQueue', {
 });
 
 export const addBondWinJob = async (listId) => {
+  console.log("List 0",listId )
   await bondWinQueue.add('processBondWins', { listId });
 };
 
