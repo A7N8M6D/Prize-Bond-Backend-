@@ -3,31 +3,37 @@ import { BondWin } from "../models/Winbonds.model.js";
 import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
 
-
-
-
 const bondWinQueue = new Bull('bondWinQueue', 'redis://127.0.0.1:6379'); // Adjust Redis connection as needed
+
+// Listen for job events
+bondWinQueue.on('completed', (job, result) => {
+    console.log(`Job ${job.id} completed with result: ${result}`);
+});
+
+bondWinQueue.on('failed', (job, err) => {
+    console.error(`Job ${job.id} failed with error: ${err.message}`);
+});
 
 export const addBondWinJob = async (listId) => {
   try {
+    console.log("Before queued", listId);
     
-console.log("Before queued",listId)
     // Add job to queue (this should be quick)
-     bondWinQueue.add('processBondWins', { listId }); // Set timeout to 30 seconds
+    bondWinQueue.add('processBondWins', { listId }); // Set timeout to 30 seconds
 
-    console.log("after queued",listId)
+    console.log("after queued", listId);
     // Immediately return a response to avoid timeout
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
     console.error('Error adding job to queue:', error);
-    return  {message: 'Failed to add job to the queue'} ;
+    return { message: 'Failed to add job to the queue' };
   }
 };
 
 // Job processor
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
-  console.log("job queued now", listId)
+  console.log("job queued now", listId);
 
   try {
     const list = await List.findById(listId).exec();
