@@ -8,8 +8,6 @@ import fs from "fs/promises"; // Import the promises API from the fs module
 import { scheduleBondCheck } from "./bond.controller.js";
 import { addBondWinJob } from "../utils/bondwinjobs.js";
 
-// import fs from "fs";
-
 /*
  
  
@@ -197,6 +195,7 @@ console.log("File")
     }
     try {
       console.log("Add Bond Job Function")
+      console.log("list -01 ",list._id)
       await addBondWinJob(list._id);
     } catch (error) {
       console.error("Error scheduling bond win job:", error);
