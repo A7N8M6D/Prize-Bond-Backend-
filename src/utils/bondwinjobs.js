@@ -1,4 +1,4 @@
-import Queue from 'bull';
+import Bull from 'bull';
 import { BondWin } from "../models/Winbonds.model.js";
 import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
