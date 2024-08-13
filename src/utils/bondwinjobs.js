@@ -25,53 +25,37 @@ bondWinQueue.process('processBondWins', async (job) => {
     }
 
     const bonds = await Bond.find().exec();
-    for (const bond of bonds) {
+    const bondWinPromises = bonds.map(async (bond) => {
       const { PrizeBondNumber, user } = bond;
       const { FirstWin, SecondWin, ThirdWin } = list;
 
-      // Check if bond numbers match any prize numbers
-      if (PrizeBondNumber.some(num => FirstWin.includes(num))) {
-        await BondWin.create({
-          PrizeBondType: 1,
-          PrizeBondNumber: PrizeBondNumber.find(num => FirstWin.includes(num)),
-          user,
-          bond: bond._id,
-          List: listId,
-          Month: list.Month,
-          Year: list.Year,
-          AmountWin: list.FirstPrize,
-          WinPosition: ['First Prize']
-        });
-      }
+      const winData = [
+        { winNumbers: FirstWin, prizeType: 1, amount: list.FirstPrize, position: 'First Prize' },
+        { winNumbers: SecondWin, prizeType: 2, amount: list.SecondPrize, position: 'Second Prize' },
+        { winNumbers: ThirdWin, prizeType: 3, amount: list.ThirdPrize, position: 'Third Prize' }
+      ];
 
-      if (PrizeBondNumber.some(num => SecondWin.includes(num))) {
-        await BondWin.create({
-          PrizeBondType: 2,
-          PrizeBondNumber: PrizeBondNumber.find(num => SecondWin.includes(num)),
-          user,
-          bond: bond._id,
-          List: listId,
-          Month: list.Month,
-          Year: list.Year,
-          AmountWin: list.SecondPrize,
-          WinPosition: ['Second Prize']
-        });
-      }
+      const bondWinTasks = winData.map(async ({ winNumbers, prizeType, amount, position }) => {
+        const winningNumber = PrizeBondNumber.find(num => winNumbers.includes(num));
+        if (winningNumber) {
+          await BondWin.create({
+            PrizeBondType: prizeType,
+            PrizeBondNumber: winningNumber,
+            user,
+            bond: bond._id,
+            List: listId,
+            Month: list.Month,
+            Year: list.Year,
+            AmountWin: amount,
+            WinPosition: [position]
+          });
+        }
+      });
 
-      if (PrizeBondNumber.some(num => ThirdWin.includes(num))) {
-        await BondWin.create({
-          PrizeBondType: 3,
-          PrizeBondNumber: PrizeBondNumber.find(num => ThirdWin.includes(num)),
-          user,
-          bond: bond._id,
-          List: listId,
-          Month: list.Month,
-          Year: list.Year,
-          AmountWin: list.ThirdPrize,
-          WinPosition: ['Third Prize']
-        });
-      }
-    }
+      return Promise.all(bondWinTasks);
+    });
+
+    await Promise.all(bondWinPromises);
   } catch (error) {
     console.error('Error processing bond wins:', error);
   }
