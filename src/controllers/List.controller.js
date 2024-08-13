@@ -195,8 +195,12 @@ console.log("File")
           )
         );
     }
-// Schedule bond check after five minutes
-// await addBondWinJob(list._id);
+    try {
+      await addBondWinJob(list._id);
+    } catch (error) {
+      console.error("Error scheduling bond win job:", error);
+      return res.status(500).json({ error: "Failed to schedule bond win job" });
+    }
     return res
       .status(201)
       .json(new ApiResponse(200, list, "List Saved Successfully"));
