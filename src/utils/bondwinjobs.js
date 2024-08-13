@@ -26,6 +26,7 @@ export const addBondWinJob = async (req, res) => {
 // Job processor
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
+  console.log("job queued now", listId)
 
   try {
     const list = await List.findById(listId).exec();
