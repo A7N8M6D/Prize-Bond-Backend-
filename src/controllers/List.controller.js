@@ -196,7 +196,7 @@ console.log("File")
         );
     }
 // Schedule bond check after five minutes
-await addBondWinJob(list._id);
+// await addBondWinJob(list._id);
     return res
       .status(201)
       .json(new ApiResponse(200, list, "List Saved Successfully"));
