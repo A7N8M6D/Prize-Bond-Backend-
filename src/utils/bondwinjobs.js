@@ -3,18 +3,24 @@ import { BondWin } from "../models/Winbonds.model.js";
 import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
 
-const bondWinQueue = new Queue('bondWinQueue', {
-  redis: {
-    host: '127.0.0.1',
-    port: 6379
-  }
-});
 
-export const addBondWinJob = async (listId) => {
-  console.log("List 0",listId )
-  await bondWinQueue.add('processBondWins', { listId });
-  return res.status(200).json({ message: 'Job added to the queue, processing in background.' });
-  console.log("List 22",listId )
+
+
+const bondWinQueue = new Bull('bondWinQueue', 'redis://127.0.0.1:6379'); // Adjust Redis connection as needed
+
+export const addBondWinJob = async (req, res) => {
+  try {
+    const { listId } = req.body;
+
+    // Add job to queue (this should be quick)
+    await bondWinQueue.add('processBondWins', { listId });
+
+    // Immediately return a response to avoid timeout
+    return res.status(200).json({ message: 'Job added to the queue and will be processed in the background.' });
+  } catch (error) {
+    console.error('Error adding job to queue:', error);
+    return res.status(500).json({ message: 'Failed to add job to the queue.' });
+  }
 };
 
 // Job processor
@@ -27,53 +33,55 @@ bondWinQueue.process('processBondWins', async (job) => {
       throw new Error('List not found');
     }
 
-    const bondChunkSize = 10; // Small chunk size
-    let skip = 0;
-    let bonds;
+    const bonds = await Bond.find().exec();
+    for (const bond of bonds) {
+      const { PrizeBondNumber, user } = bond;
+      const { FirstWin, SecondWin, ThirdWin } = list;
 
-    do {
-      bonds = await Bond.find().skip(skip).limit(bondChunkSize).exec();
-      skip += bondChunkSize;
-
-      const bondWinPromises = bonds.map(async (bond) => {
-        const { PrizeBondNumber, user } = bond;
-        const { FirstWin, SecondWin, ThirdWin } = list;
-
-        const winData = [
-          { winNumbers: FirstWin, prizeType: 1, amount: list.FirstPrize, position: 'First Prize' },
-          { winNumbers: SecondWin, prizeType: 2, amount: list.SecondPrize, position: 'Second Prize' },
-          { winNumbers: ThirdWin, prizeType: 3, amount: list.ThirdPrize, position: 'Third Prize' }
-        ];
-
-        const bondWinTasks = winData.map(async ({ winNumbers, prizeType, amount, position }) => {
-          const winningNumber = PrizeBondNumber.find(num => winNumbers.includes(num));
-          if (winningNumber) {
-            await BondWin.create({
-              PrizeBondType: prizeType,
-              PrizeBondNumber: winningNumber,
-              user,
-              bond: bond._id,
-              List: listId,
-              Month: list.Month,
-              Year: list.Year,
-              AmountWin: amount,
-              WinPosition: [position]
-            });
-          }
+      if (PrizeBondNumber.some(num => FirstWin.includes(num))) {
+        await BondWin.create({
+          PrizeBondType: 1,
+          PrizeBondNumber: PrizeBondNumber.find(num => FirstWin.includes(num)),
+          user,
+          bond: bond._id,
+          List: listId,
+          Month: list.Month,
+          Year: list.Year,
+          AmountWin: list.FirstPrize,
+          WinPosition: ['First Prize'],
         });
-
-        return Promise.all(bondWinTasks);
-      });
-
-      await Promise.all(bondWinPromises);
-
-      // Trigger another job for the next batch
-      if (bonds.length === bondChunkSize) {
-        bondWinQueue.add('processBondWins', { listId, skip });
       }
 
-    } while (bonds.length > 0);
+      if (PrizeBondNumber.some(num => SecondWin.includes(num))) {
+        await BondWin.create({
+          PrizeBondType: 2,
+          PrizeBondNumber: PrizeBondNumber.find(num => SecondWin.includes(num)),
+          user,
+          bond: bond._id,
+          List: listId,
+          Month: list.Month,
+          Year: list.Year,
+          AmountWin: list.SecondPrize,
+          WinPosition: ['Second Prize'],
+        });
+      }
 
+      if (PrizeBondNumber.some(num => ThirdWin.includes(num))) {
+        await BondWin.create({
+          PrizeBondType: 3,
+          PrizeBondNumber: PrizeBondNumber.find(num => ThirdWin.includes(num)),
+          user,
+          bond: bond._id,
+          List: listId,
+          Month: list.Month,
+          Year: list.Year,
+          AmountWin: list.ThirdPrize,
+          WinPosition: ['Third Prize'],
+        });
+      }
+    }
+
+    console.log('Bond wins processed successfully for list:', listId);
   } catch (error) {
     console.error('Error processing bond wins:', error);
   }
