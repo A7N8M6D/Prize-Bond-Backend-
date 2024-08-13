@@ -20,7 +20,7 @@ console.log("Before queued",listId)
     return res.status(200).json({ message: 'Job added to the queue and will be processed in the background.' });
   } catch (error) {
     console.error('Error adding job to queue:', error);
-    return res.status(500).json({ message: 'Failed to add job to the queue.' });
+    return  {message: 'Failed to add job to the queue'} ;
   }
 };
 
