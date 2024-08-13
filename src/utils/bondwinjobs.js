@@ -29,7 +29,7 @@ bondWinQueue.process('processBondWins', async (job) => {
     const bondChunkSize = 100;
     let skip = 0;
     let bonds;
-
+    console.log("1", "Job started")
     // Process bonds in chunks
     do {
       bonds = await Bond.find().skip(skip).limit(bondChunkSize).exec();
