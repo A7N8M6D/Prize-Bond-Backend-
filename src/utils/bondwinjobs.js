@@ -4,6 +4,7 @@ import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
 import Redis from 'ioredis';
 
+// Configure Redis connection
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const redis = new Redis(redisUrl);
 
@@ -15,14 +16,19 @@ redis.on('error', (err) => {
   console.error('Redis connection error:', err);
 });
 
-const bondWinQueue = new Bull('bondWinQueue', { redis: redisUrl });
-
-
+// Initialize Bull queue
+const bondWinQueue = new Bull('bondWinQueue', {
+  redis: {
+    port: 6379,          // Redis port
+    host: 'localhost',  // Redis host
+    // password: '',     // Redis password (if applicable)
+  }
+});
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
-    const job =  bondWinQueue.add('processBondWins', { listId });
+    const job = await bondWinQueue.add('processBondWins', { listId });
     console.log("Job ID:", job.id);
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
@@ -96,4 +102,13 @@ bondWinQueue.process('processBondWins', async (job) => {
     console.error('Error in job processing:', error);
     throw error;
   }
+});
+
+// Debugging job events
+bondWinQueue.on('completed', (job, result) => {
+  console.log(`Job ${job.id} completed with result: ${result}`);
+});
+
+bondWinQueue.on('failed', (job, err) => {
+  console.error(`Job ${job.id} failed with error: ${err.message}`);
 });
