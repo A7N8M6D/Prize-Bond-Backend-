@@ -5,7 +5,7 @@ import { Bond } from "../models/bonds.model.js";
 import Redis from 'ioredis';
 
 // Configure Redis connection
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL || 'redis://default:mySecretPassword@redis-12345.c15.us-east-1-3.ec2.cloud.redislabs.com:18029';
 const redis = new Redis(redisUrl);
 
 redis.on('connect', () => {
@@ -24,7 +24,7 @@ const bondWinQueue = new Bull('bondWinQueue', {
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
-    const job = bondWinQueue.add('processBondWins', { listId });
+    const job = await bondWinQueue.add('processBondWins', { listId });
     console.log("Job added to queue:", job);
     if (job) {
       console.log("Job ID:", job.id);
