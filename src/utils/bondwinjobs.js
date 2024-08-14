@@ -48,7 +48,7 @@ bondWinQueue.process('processBondWins', async (job) => {
   console.log("Processing job for list:", listId);
 
   try {
-    const list = await List.findById(listId).exec();
+    const list =  List.findById(listId).exec();
     if (!list) {
       throw new Error('List not found');
     }
