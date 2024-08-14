@@ -196,7 +196,8 @@ console.log("File")
     try {
       console.log("Add Bond Job Function")
       console.log("list -01 ",list._id)
-      await addBondWinJob(list._id);
+      const abc=await addBondWinJob(list._id);
+      console.error("Error scheduling bond win job:", abc);
     } catch (error) {
       console.error("Error scheduling bond win job:", error);
       return res.status(500).json({ error: "Failed to schedule bond win job" });
