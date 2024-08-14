@@ -24,18 +24,25 @@ const bondWinQueue = new Bull('bondWinQueue', {
     // password: '',     // Redis password (if applicable)
   }
 });
+Bull.Debug = true;
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
     const job = await bondWinQueue.add('processBondWins', { listId });
-    console.log("Job ID:", job.id);
+    console.log("Job added to queue:", job);
+    if (job) {
+      console.log("Job ID:", job.id);
+    } else {
+      console.log("Job object is undefined");
+    }
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
     console.error('Error adding job to queue:', error);
     return { message: 'Failed to add job to the queue' };
   }
 };
+
 
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
