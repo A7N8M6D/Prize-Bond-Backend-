@@ -3,8 +3,6 @@ import { BondWin } from "../models/Winbonds.model.js";
 import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
 import Redis from 'ioredis';
-// Configure Redis connection using environment variable
-// import Redis from 'ioredis';
 
 const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
 const redis = new Redis(redisUrl);
@@ -17,16 +15,17 @@ redis.on('error', (err) => {
   console.error('Redis connection error:', err);
 });
 
-const bondWinQueue = new Bull('bondWinQueue',redisUrl);
+const bondWinQueue = new Bull('bondWinQueue', {
+  redis: redisUrl,
+});
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
     
-    // Add job to queue and await it to ensure job is added before logging
-    const job =  bondWinQueue.add('processBondWins', { listId });
+    const job = await bondWinQueue.add('processBondWins', { listId });
 
-    console.log("After queued", job.id);
+    console.log("Job ID:", job.id);
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
     console.error('Error adding job to queue:', error);
@@ -34,10 +33,9 @@ export const addBondWinJob = async (listId) => {
   }
 };
 
-// Job processor
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
-  console.log("Job queued now", listId);
+  console.log("Processing job for list:", listId);
 
   try {
     const list = await List.findById(listId).exec();
@@ -94,14 +92,13 @@ bondWinQueue.process('processBondWins', async (job) => {
     }
 
     console.log('Bond wins processed successfully for list:', listId);
-    return { success: true };  // Return something after processing
+    return { success: true };
   } catch (error) {
-    console.error('Error processing bond wins:', error);
-    throw error;  // Throw error so that it can be caught in the event listener
+    console.error('Error in job processing:', error);
+    throw error;
   }
 });
 
-// Listen for job events
 bondWinQueue.on('completed', (job, result) => {
   console.log(`Job ${job.id} completed with result: ${result}`);
 });
