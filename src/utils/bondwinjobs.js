@@ -34,7 +34,7 @@ export default async (req, res) => {
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
-    const job = await bondWinQueue.add('processBondWins', { listId });
+    const job =  bondWinQueue.add('processBondWins', { listId });
     console.log("Job ID:", job.id);
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
@@ -48,7 +48,7 @@ bondWinQueue.process('processBondWins', async (job) => {
   console.log("Processing job for list:", listId);
 
   try {
-    const list =  List.findById(listId).exec();
+    const list = await List.findById(listId).exec();
     if (!list) {
       throw new Error('List not found');
     }
