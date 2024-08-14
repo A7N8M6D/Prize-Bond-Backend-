@@ -17,9 +17,7 @@ redis.on('error', (err) => {
 });
 
 // Initialize Bull queue
-const bondWinQueue = new Bull('bondWinQueue', {
-  redis: redisUrl
-});
+const bondWinQueue = new Bull('bondWinQueue');
 
 export const addBondWinJob = async (listId) => {
   try {
