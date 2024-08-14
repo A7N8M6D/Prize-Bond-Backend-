@@ -24,7 +24,7 @@ export const addBondWinJob = async (listId) => {
     console.log("Before queued", listId);
     
     // Add job to queue and await it to ensure job is added before logging
-    const job = await bondWinQueue.add('processBondWins', { listId });
+    const job =  bondWinQueue.add('processBondWins', { listId });
 
     console.log("After queued", job.id);
     return { message: 'Job added to the queue and will be processed in the background.' };
