@@ -6,7 +6,9 @@ import Redis from 'ioredis';
 
 // Configure Redis connection
 const redisUrl = process.env.REDIS_URL || 'redis://default:mySecretPassword@redis-12345.c15.us-east-1-3.ec2.cloud.redislabs.com:18029';
-const redis = new Redis(redisUrl);
+const redis = new Redis({ host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password: process.env.REDIS_PASSWORD,});
 
 redis.on('connect', () => {
   console.log('Connected to Redis');
@@ -18,7 +20,7 @@ redis.on('error', (err) => {
 
 // Initialize Bull queue
 const bondWinQueue = new Bull('bondWinQueue', {
-  redis: redisUrl
+  Redis: redis
 });
 
 export const addBondWinJob = async (listId) => {
