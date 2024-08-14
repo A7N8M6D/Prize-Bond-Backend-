@@ -3,15 +3,16 @@ import { BondWin } from "../models/Winbonds.model.js";
 import { List } from "../models/list.model.js";
 import { Bond } from "../models/bonds.model.js";
 
-// Configure Redis connection
-const bondWinQueue = new Bull('bondWinQueue', 'redis://<your-redis-host>:<your-redis-port>'); // Update this with your Redis connection details
+// Configure Redis connection using environment variable
+const redisUrl = process.env.REDIS_URL;
+const bondWinQueue = new Bull('bondWinQueue', redisUrl);
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
     
-    // Add job to queue
-    const job = bondWinQueue.add('processBondWins', { listId });
+    // Add job to queue and await it to ensure job is added before logging
+    const job = await bondWinQueue.add('processBondWins', { listId });
 
     console.log("After queued", job.id);
     return { message: 'Job added to the queue and will be processed in the background.' };
@@ -81,8 +82,10 @@ bondWinQueue.process('processBondWins', async (job) => {
     }
 
     console.log('Bond wins processed successfully for list:', listId);
+    return { success: true };  // Return something after processing
   } catch (error) {
     console.error('Error processing bond wins:', error);
+    throw error;  // Throw error so that it can be caught in the event listener
   }
 });
 
