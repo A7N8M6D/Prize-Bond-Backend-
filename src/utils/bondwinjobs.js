@@ -13,7 +13,7 @@ export const addBondWinJob = async (listId) => {
     // Add job to queue
     bondWinQueue.add('processBondWins', { listId });
 
-    console.log("After queued", listId);
+    console.log("After queued", bondWinQueue._id);
     return { message: 'Job added to the queue and will be processed in the background.' };
   } catch (error) {
     console.error('Error adding job to queue:', error);
