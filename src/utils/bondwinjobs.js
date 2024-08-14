@@ -17,12 +17,14 @@ redis.on('error', (err) => {
 });
 
 // Initialize Bull queue
-const bondWinQueue = new Bull('bondWinQueue');
+const bondWinQueue = new Bull('bondWinQueue', {
+  redis: redisUrl
+});
 
 export const addBondWinJob = async (listId) => {
   try {
     console.log("Before queued", listId);
-    const job = await bondWinQueue.add('processBondWins', { listId });
+    const job = bondWinQueue.add('processBondWins', { listId });
     console.log("Job added to queue:", job);
     if (job) {
       console.log("Job ID:", job.id);
