@@ -109,11 +109,3 @@ bondWinQueue.process('processBondWins', async (job) => {
     throw error;
   }
 });
-
-bondWinQueue.on('completed', (job, result) => {
-  console.log(`Job ${job.id} completed with result: ${JSON.stringify(result)}`);
-});
-
-bondWinQueue.on('failed', (job, err) => {
-  console.error(`Job ${job.id} failed with error: ${err.message}`);
-});
