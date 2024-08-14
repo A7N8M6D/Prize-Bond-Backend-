@@ -18,13 +18,8 @@ redis.on('error', (err) => {
 
 // Initialize Bull queue
 const bondWinQueue = new Bull('bondWinQueue', {
-  redis: {
-    port: 6379,          // Redis port
-    host: 'localhost',  // Redis host
-    // password: '',     // Redis password (if applicable)
-  }
+  redis: redisUrl
 });
-Bull.Debug = true;
 
 export const addBondWinJob = async (listId) => {
   try {
@@ -42,7 +37,6 @@ export const addBondWinJob = async (listId) => {
     return { message: 'Failed to add job to the queue' };
   }
 };
-
 
 bondWinQueue.process('processBondWins', async (job) => {
   const { listId } = job.data;
