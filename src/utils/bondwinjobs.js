@@ -17,19 +17,7 @@ redis.on('error', (err) => {
 
 const bondWinQueue = new Bull('bondWinQueue', { redis: redisUrl });
 
-export default async (req, res) => {
-  const { listId } = req.body;
 
-  try {
-    console.log(`Received request to add job for listId: ${listId}`);
-    const job = await bondWinQueue.add('processBondWins', { listId });
-    console.log(`Job added to queue with ID: ${job.id}`);
-    res.status(200).json({ message: 'Job added to the queue' });
-  } catch (error) {
-    console.error('Error adding job to queue:', error);
-    res.status(500).json({ message: 'Failed to add job to the queue' });
-  }
-};
 
 export const addBondWinJob = async (listId) => {
   try {
