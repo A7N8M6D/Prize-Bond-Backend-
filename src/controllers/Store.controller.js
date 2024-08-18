@@ -14,28 +14,29 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 
 const addStore = asynchandler(async (req, res) => {
-  const { Description, city ,area, number, EMAil, Name } = req.body;
+  const { Description, city, area, number, email, Name } = req.body;
 
   const useR = await User.findById(req.user?._id);
   console.log("User in mobile", useR);
 
-  if ([Description].some((field) => field?.trim() === "")) {
+  if (!Description?.trim()) {
     throw new ApiError(400, "Description field is required");
   }
-  if ([city].some((field) => field?.trim() === "")) {
+  if (!city?.trim()) {
     throw new ApiError(400, "City field is required");
   }
-  if ([area].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "area field is required");
+  if (!area?.trim()) {
+    throw new ApiError(400, "Area field is required");
   }
-console.log("Data" ,Description, location, number, EMAil, Name)
-  // Use the provided values or fall back to the user's data
-  const locatt = location?  location:useR.Location ;
-  const num = number?  number: useR.number;
-  const eml = EMAil? EMAil: useR.email ;
-  const namm = Name?  Name:  useR.fullname;
 
-  // Check if the store already exists (uncomment and adjust this as needed)
+  console.log("Data", Description, city, area, number, email, Name);
+
+  // Default to user data if fields are not provided
+  const num = number || useR.number;
+  const eml = email || useR.email;
+  const namm = Name || useR.fullname;
+
+  // Uncomment if checking for existing stores
   // const existedStore = await Store.findOne({ User: req.user?._id });
   // if (existedStore) {
   //   throw new ApiError(409, "Store already exists");
@@ -43,8 +44,8 @@ console.log("Data" ,Description, location, number, EMAil, Name)
 
   const createdStore = await Store.create({
     Description,
-    city:city,
-    Area:area,
+    City :city,
+    Area: area,
     number: num,
     Email: eml,
     Name: namm,
