@@ -14,51 +14,81 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 
 const addStore = asynchandler(async (req, res) => {
-  const { Description, city, area, number, email, Name } = req.body;
+  try {
+    const { Description, city, area, number, email, Name } = req.body;
 
-  const useR = await User.findById(req.user?._id);
-  console.log("User in mobile", useR);
-console.log("data as",city,area,number,email,number)
-  if (!Description?.trim()) {
-    throw new ApiError(400, "Description field is required");
+    const useR = await User.findById(req.user?._id);
+    if (!useR) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    if (!Description?.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Description field is required",
+      });
+    }
+
+    if (!city?.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "City field is required",
+      });
+    }
+
+    if (!area?.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: "Area field is required",
+      });
+    }
+
+    // Fallback to user data if fields are not provided
+    const num = number || useR.number;
+    const eml = email || useR.email;
+    const namm = Name || useR.fullname;
+
+    // Uncomment if checking for existing stores
+    // const existedStore = await Store.findOne({ User: req.user?._id });
+    // if (existedStore) {
+    //   return res.status(409).json({
+    //     success: false,
+    //     message: "Store already exists",
+    //   });
+    // }
+
+    const createdStore = await Store.create({
+      Description,
+      City:city,
+      Area: area,
+      number: num,
+      Email: eml,
+      Name: namm,
+      User: req.user?._id,
+    });
+
+    if (!createdStore) {
+      return res.status(500).json({
+        success: false,
+        error: "Store not saved. Something went wrong.",
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: createdStore,
+      message: "Store created successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      error: "An internal server error occurred",
+    });
   }
-  if (!city?.trim()) {
-    throw new ApiError(400, "City field is required");
-  }
-  if (!area?.trim()) {
-    throw new ApiError(400, "Area field is required");
-  }
-
-  console.log("Data", Description, city, area, number, email, Name);
-
-  // Default to user data if fields are not provided
-  const num = number || useR.number;
-  const eml = email || useR.email;
-  const namm = Name || useR.fullname;
-
-  // Uncomment if checking for existing stores
-  // const existedStore = await Store.findOne({ User: req.user?._id });
-  // if (existedStore) {
-  //   throw new ApiError(409, "Store already exists");
-  // }
-
-  const createdStore = await Store.create({
-    Description,
-    City :city,
-    Area: area,
-    number: num,
-    Email: eml,
-    Name: namm,
-    User: req.user?._id,
-  });
-
-  if (!createdStore) {
-    throw new ApiError(500, "Store not saved. Something went wrong.");
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdStore, "Store created successfully"));
 });
 
 /*
