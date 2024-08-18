@@ -16,7 +16,7 @@ import { asynchandler } from "../utils/asynchandler.js";
 const addStore = asynchandler(async (req, res) => {
   try {
     const { Description, city, area, number, email, Name } = req.body;
-
+console.log("data",Description,city,area,email ,Name)
     const useR = await User.findById(req.user?._id);
     if (!useR) {
       return res.status(404).json({
