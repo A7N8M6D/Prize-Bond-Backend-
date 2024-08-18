@@ -419,7 +419,7 @@ results = await List.find(query).select({
 
 const DeleteList = asynchandler(async (req, res) => {
   const { id } = req.query.ListId; // Assuming the _id is passed as a URL parameter
-
+console.log("List ID" ,id)
   try {
     const deletedList = await List.findByIdAndDelete(id);
     console.log("deleted data ",deletedList)
