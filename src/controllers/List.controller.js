@@ -422,7 +422,7 @@ const DeleteList = asynchandler(async (req, res) => {
 
   try {
     const deletedList = await List.findByIdAndDelete(id);
-    
+    console.log("deleted data ",deletedList)
     if (deletedList) {
       return res.status(200).json({ message: "List deleted successfully", data: deletedList });
     } else {
