@@ -149,6 +149,7 @@ const GetAllStore = asynchandler(async (req, res) => {
   const limit = 10;
   const skip = (page - 1) * limit;
   const location = req.query.location; // City provided in query
+
   console.log("location", location);
 
   let query = {};
@@ -157,7 +158,13 @@ const GetAllStore = asynchandler(async (req, res) => {
   }
 
   try {
-    // First fetch the stores based on the city (location) if provided
+    // Fetch distinct areas (towns) for the given city (location)
+    let distinctAreas = [];
+    if (location) {
+      distinctAreas = await Store.distinct("Area", { City: location });
+    }
+
+    // Fetch paginated stores based on the city (location)
     const stores = await Store.find(query).skip(skip).limit(limit).exec();
     const totalStores = await Store.countDocuments(query);
     const totalPages = Math.ceil(totalStores / limit);
@@ -165,6 +172,7 @@ const GetAllStore = asynchandler(async (req, res) => {
     res.json({
       page,
       totalPages,
+      towns: distinctAreas, // Send distinct areas as "Towns"
       data: stores,
     });
   } catch (err) {
