@@ -149,7 +149,7 @@ const GetAllStore = asynchandler(async (req, res) => {
   const limit = 10;
   const skip = (page - 1) * limit;
   const location = req.query.location;
-
+console.log("location",location)
   let query = {};
   if (location) {
     query.Location = location;
