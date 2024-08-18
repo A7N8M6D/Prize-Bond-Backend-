@@ -14,13 +14,19 @@ import { asynchandler } from "../utils/asynchandler.js";
 */
 
 const addStore = asynchandler(async (req, res) => {
-  const { Description, location, number, EMAil, Name } = req.body;
+  const { Description, city ,area, number, EMAil, Name } = req.body;
 
   const useR = await User.findById(req.user?._id);
   console.log("User in mobile", useR);
 
   if ([Description].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "Description field is required");
+  }
+  if ([city].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "City field is required");
+  }
+  if ([area].some((field) => field?.trim() === "")) {
+    throw new ApiError(400, "area field is required");
   }
 console.log("Data" ,Description, location, number, EMAil, Name)
   // Use the provided values or fall back to the user's data
@@ -37,7 +43,8 @@ console.log("Data" ,Description, location, number, EMAil, Name)
 
   const createdStore = await Store.create({
     Description,
-    Location: locatt,
+    city:city,
+    Area:area,
     number: num,
     Email: eml,
     Name: namm,

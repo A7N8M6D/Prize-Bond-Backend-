@@ -9,7 +9,9 @@ const storeschema = new Schema(
       type: String,
       required: true,
     },
-    Location: {
+    City: {
+      type: String,
+    },Area: {
       type: String,
     },
     number: {
