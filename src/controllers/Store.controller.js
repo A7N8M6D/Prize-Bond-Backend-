@@ -148,14 +148,16 @@ const GetAllStore = asynchandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const skip = (page - 1) * limit;
-  const location = req.query.location;
-console.log("location",location)
+  const location = req.query.location; // City provided in query
+  console.log("location", location);
+
   let query = {};
   if (location) {
-    query.Location = location;
+    query.City = location; // Filter by city if location is provided
   }
 
   try {
+    // First fetch the stores based on the city (location) if provided
     const stores = await Store.find(query).skip(skip).limit(limit).exec();
     const totalStores = await Store.countDocuments(query);
     const totalPages = Math.ceil(totalStores / limit);
