@@ -418,14 +418,12 @@ results = await List.find(query).select({
 */
 
 const DeleteList = asynchandler(async (req, res) => {
-  const { id } = req.params; // Correctly access the _id from the URL parameter
-
-  console.log("List ID:", id); // Log the ID to check if it's being received correctly
+  const id = req.query.ListId; // Correctly access the ListId from query parameters
+  console.log("List ID:", id);
 
   try {
     const deletedList = await List.findByIdAndDelete(id);
-    console.log("Deleted data:", deletedList); // Log the deleted data for debugging
-
+    console.log("Deleted data:", deletedList);
     if (deletedList) {
       return res.status(200).json({ message: "List deleted successfully", data: deletedList });
     } else {
@@ -435,5 +433,5 @@ const DeleteList = asynchandler(async (req, res) => {
     console.error("Error deleting list:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-});
+})
 export { addNewList, verifyList, GetList, FindNumber,GetInfo ,DeleteList};
