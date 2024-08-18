@@ -124,7 +124,7 @@ const loginUser = asynchandler(async (req, res) => {
   // Validate password
   const isPasswordValid = await user.isPasswordCorrect(password);
   if (!isPasswordValid) {
-    return res.status(401).json({ error: "Invalid username or password!" });
+    return res.status(401).json({ error: "Invalid password!" });
   }
 
   // Generate tokens

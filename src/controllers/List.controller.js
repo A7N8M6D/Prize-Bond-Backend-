@@ -341,7 +341,7 @@ const GetInfo = asynchandler(async (req, res) => {
 /*
                                                          
                                                          
------------------       Delete Bond        -----------------
+-----------------       Find Number        -----------------
                                                         
                                                          
 */
@@ -409,4 +409,28 @@ results = await List.find(query).select({
   }
 });
 
-export { addNewList, verifyList, GetList, FindNumber,GetInfo };
+/*
+                                                         
+                                                         
+-----------------       Delete List        -----------------
+                                                        
+                                                         
+*/
+
+const DeleteList = asynchandler(async (req, res) => {
+  const { id } = req.query.ListId; // Assuming the _id is passed as a URL parameter
+
+  try {
+    const deletedList = await List.findByIdAndDelete(id);
+    
+    if (deletedList) {
+      return res.status(200).json({ message: "List deleted successfully", data: deletedList });
+    } else {
+      return res.status(404).json({ message: "List not found with this id." });
+    }
+  } catch (error) {
+    console.error("Error deleting list:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+})
+export { addNewList, verifyList, GetList, FindNumber,GetInfo ,DeleteList};
