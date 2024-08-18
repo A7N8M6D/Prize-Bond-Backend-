@@ -18,7 +18,7 @@ const addStore = asynchandler(async (req, res) => {
 
   const useR = await User.findById(req.user?._id);
   console.log("User in mobile", useR);
-
+console.log("data as",city,area,number,email,number)
   if (!Description?.trim()) {
     throw new ApiError(400, "Description field is required");
   }
