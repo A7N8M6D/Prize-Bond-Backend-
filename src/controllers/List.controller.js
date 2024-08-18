@@ -417,7 +417,7 @@ results = await List.find(query).select({
                                                          
 */
 
-const DeleteList = asyncHandler(async (req, res) => {
+const DeleteList = asynchandler(async (req, res) => {
   const { id } = req.params; // Correctly access the _id from the URL parameter
 
   console.log("List ID:", id); // Log the ID to check if it's being received correctly
