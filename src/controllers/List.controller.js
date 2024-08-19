@@ -211,6 +211,38 @@ console.log("File")
     return res.status(500).send("Error reading file");
   }
 });
+/*
+                                                         
+                                                         
+-----------------       Save List        -----------------
+                                                        
+                                                         
+*/
+const saveList = asynchandler(async (req, res) => {
+  try {
+    const { ListId } = req.query;
+    console.log("ListId:", ListId);
+
+    // Call addBondWinJob and await its result
+    const abc = await addBondWinJob(ListId);
+
+    // If the job fails or doesn't return a result
+    if (!abc) {
+      return res.status(500).json({ error: "Failed to schedule bond win job" });
+    }
+
+    // If the job is successfully scheduled
+    return res.status(200).json(new ApiResponse(200, null, "Job scheduled successfully"));
+
+  } catch (error) {
+    // Log the error and respond with an appropriate status and message
+    console.error("Error scheduling bond win job:", error.message);
+    // return res.status(500).json(new ApiError(500, error.message || "An unexpected error occurred"));
+    return res.status(500).json({ error:error.message || "An unexpected error occurred" });
+  }
+});
+
+
 
 /*
                                                          
@@ -434,4 +466,4 @@ const DeleteList = asynchandler(async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 })
-export { addNewList, verifyList, GetList, FindNumber,GetInfo ,DeleteList};
+export { addNewList, verifyList, GetList, FindNumber,GetInfo ,DeleteList,saveList};
