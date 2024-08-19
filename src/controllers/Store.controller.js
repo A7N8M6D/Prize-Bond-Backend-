@@ -127,7 +127,8 @@ const GetStore = asynchandler(async (req, res) => {
     const store = await Store.findOne({ User: userId });
     
     if (!store) {
-      return res.status(404).json(new ApiResponse(404, null, "Store Not Found"));
+      return res.status(404).json({ error: "Store Not Found" });
+      // return res.status(404).json(new ApiResponse(404, null, "Store Not Found"));
     }
 
     console.log("Fetched Store: ", store);
