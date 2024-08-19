@@ -213,57 +213,45 @@ type=parseInt ( type)
 const checkBonds = asynchandler(async (req, res) => {
   const { listId } = req.params;
 
-  // Fetch the list details by ID
+  // Fetch the list details
   const list = await List.findById(listId);
   if (!list) {
-    return res.status(404).json(new ApiError(404, "List not found"));
+    return res.status(404).json(new ApiError(404, 'List not found'));
   }
 
-  try {
-    // Fetch all bonds with user population
-    const bonds = await Bond.find().populate("user");
+  // Fetch all bonds
+  const bonds = await Bond.find().populate('user');
 
-    // Extract winning numbers and prize amounts from the list
-    const winningNumbers = [
-      { type: "First", numbers: list.FirstWin, amount: list.FirstPrize },
-      { type: "Second", numbers: list.SecondWin, amount: list.SecondPrize },
-      { type: "Third", numbers: list.ThirdWin, amount: list.ThirdPrize },
-    ];
+  // Extract winning numbers from the list
+  const winningNumbers = [
+    { type: 'First', numbers: list.FirstWin, amount: list.FirstPrize },
+    { type: 'Second', numbers: list.SecondWin, amount: list.SecondPrize },
+    { type: 'Third', numbers: list.ThirdWin, amount: list.ThirdPrize },
+  ];
 
-    // Iterate through all bonds
-    for (const bond of bonds) {
-      for (const win of winningNumbers) {
-        // Check if any of the bond numbers are present in the winning numbers
-        const matchedNumbers = bond.PrizeBondNumber.filter((number) =>
-          win.numbers.includes(number)
-        );
+  // Check and save the winning bonds
+  for (const bond of bonds) {
+    for (const win of winningNumbers) {
+      const matchedNumbers = bond.PrizeBondNumber.filter((number) =>
+        win.numbers.includes(number)
+      );
 
-        // If there are matched numbers, save the winning bond details
-        if (matchedNumbers.length > 0) {
-          await BondWin.create({
-            PrizeBondNumber: matchedNumbers, // Winning bond numbers
-            user: bond.user._id, // User associated with the bond
-            list: list._id, // Reference to the list
-            Month: list.Month, // List month
-            Year: list.Year, // List year
-            PrizeBondType: bond.PrizeBondType, // Type of prize bond
-            PrizeType: win.type, // Prize type (First, Second, Third)
-            PrizeAmount: win.amount, // Prize amount
-            Date: list.Date, // The Date field from the list
-          });
-        }
+      if (matchedNumbers.length > 0) {
+        await BondWin.create({
+          PrizeBondNumber: matchedNumbers,
+          user: bond.user,
+          list: list._id,
+          Month: list.Month,
+          Year: list.Year,
+          PrizeBondType: list.PrizeBondType,
+          PrizeType: win.type,
+          PrizeAmount: win.amount,
+        });
       }
     }
-
-    // Send response when the bond check process is completed
-    return res
-      .status(200)
-      .json(new ApiResponse(200, null, "Bond check completed successfully"));
-
-  } catch (err) {
-    // Handle any errors during the process
-    return res.status(500).json(new ApiError(500, err.message));
   }
+
+  return res.status(200).json(new ApiResponse(200, null, 'Bond check completed'));
 });
 
 // Schedule the bond check to run five minutes after list upload
