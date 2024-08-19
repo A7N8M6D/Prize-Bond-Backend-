@@ -118,14 +118,18 @@ const GetPersonalStore = asynchandler(async (req, res) => {
 
 
 const GetStore = asynchandler(async (req, res) => {
-  const storeId = req.query.id;  // Extract store ID from request parameters
-  console.log("Store ID: " + storeId);
+  const userId = req.user._id;  // Extract user ID from the request
+
+  console.log("User ID: " + userId);
 
   try {
-    const store = await Store.findById(storeId);
+    // Find the store by the associated User ID
+    const store = await Store.findOne({ User: userId });
+    
     if (!store) {
       return res.status(404).json(new ApiResponse(404, null, "Store Not Found"));
     }
+
     console.log("Fetched Store: ", store);
 
     return res.status(200).json(new ApiResponse(200, store, "Store Fetched Successfully"));
@@ -134,6 +138,7 @@ const GetStore = asynchandler(async (req, res) => {
     return res.status(500).json(new ApiResponse(500, null, "Failed to Fetch Store"));
   }
 });
+
 
 
 /*
@@ -196,19 +201,31 @@ const GetAllStore = asynchandler(async (req, res) => {
 */
 
 const UpdateStore = asynchandler(async (req, res) => {
-  const { Description, newDescription, store_id } = req.body;
+  const { newDescription, store_id } = req.body; // Use newDescription for the updated description
+  
+  try {
+    // Find the store by ID
+    const store = await Store.findById(store_id);
+    if (!store) {
+      throw new ApiError(400, "Invalid Store");
+    }
+    
+    // Update the description
+    store.Description = newDescription;
 
-  const store = await Store.findById(store_id);
-  if (!store) {
-    throw new ApiError(400, "Invalid Store");
+    // Save the store with the updated description
+    await store.save({ validateBeforeSave: false });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Store updated successfully"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to update store"));
   }
-  Store.Description = Description;
-
-  await Store.save({ validateBeforeSave: false });
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Store changd Successfully"));
 });
+
 /*
                                                          
                                                          
