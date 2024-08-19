@@ -220,7 +220,7 @@ console.log("File")
 */
 const saveList = asynchandler(async (req, res) => {
   try {
-    const { ListId } = req.query;
+    const { ListId } = req.query.ListId;
     console.log("ListId:", ListId);
 
     // Call addBondWinJob and await its result
