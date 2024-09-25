@@ -16,7 +16,7 @@ import { asynchandler } from "../utils/asynchandler.js";
 const addStore = asynchandler(async (req, res) => {
   try {
     const { Description, city, area, number, email, Name } = req.body;
-console.log("data",Description,city,area,email ,Name)
+    console.log("data", Description, city, area, email, Name);
     const useR = await User.findById(req.user?._id);
     if (!useR) {
       return res.status(404).json({
@@ -62,7 +62,7 @@ console.log("data",Description,city,area,email ,Name)
 
     const createdStore = await Store.create({
       Description,
-      City:city,
+      City: city,
       Area: area,
       number: num,
       Email: eml,
@@ -115,17 +115,15 @@ const GetPersonalStore = asynchandler(async (req, res) => {
                                                          
 */
 
-
-
 const GetStore = asynchandler(async (req, res) => {
-  const userId = req.user._id;  // Extract user ID from the request
+  const userId = req.user._id; // Extract user ID from the request
 
   console.log("User ID: " + userId);
 
   try {
     // Find the store by the associated User ID
     const store = await Store.findOne({ User: userId });
-    
+
     if (!store) {
       return res.status(404).json({ error: "Store Not Found" });
       // return res.status(404).json(new ApiResponse(404, null, "Store Not Found"));
@@ -133,14 +131,16 @@ const GetStore = asynchandler(async (req, res) => {
 
     console.log("Fetched Store: ", store);
 
-    return res.status(200).json(new ApiResponse(200, store, "Store Fetched Successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, store, "Store Fetched Successfully"));
   } catch (error) {
     console.error("Error fetching store: ", error);
-    return res.status(500).json(new ApiResponse(500, null, "Failed to Fetch Store"));
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, "Failed to Fetch Store"));
   }
 });
-
-
 
 /*
  
@@ -203,14 +203,14 @@ const GetAllStore = asynchandler(async (req, res) => {
 
 const UpdateStore = asynchandler(async (req, res) => {
   const { newDescription, store_id } = req.body; // Use newDescription for the updated description
-  
+
   try {
     // Find the store by ID
     const store = await Store.findById(store_id);
     if (!store) {
       throw new ApiError(400, "Invalid Store");
     }
-    
+
     // Update the description
     store.Description = newDescription;
 
@@ -247,4 +247,11 @@ const DeleteStore = asynchandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, {}, "Store Delete Successfully"));
 });
-export { addStore, GetStore, UpdateStore, DeleteStore, GetAllStore ,GetPersonalStore};
+export {
+  addStore,
+  GetStore,
+  UpdateStore,
+  DeleteStore,
+  GetAllStore,
+  GetPersonalStore,
+};
