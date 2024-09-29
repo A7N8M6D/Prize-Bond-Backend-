@@ -7,8 +7,8 @@ import { verifyJWT } from "./middlewares/auth.middleware.js";
 const app= express();
 app.use(cors({
     origin: '*',
+    credentials: true
 }));
-// credentials: true
 
 //for jason
 app.use(express.json({limit}))
